@@ -9,7 +9,7 @@
 
 A production-ready Flutter currency converter application built with **Clean Architecture**, **Bloc pattern**, and **offline-first** approach.
 
-
+⚠️ Note: The originally requested API (free.currencyconverterapi.com) is currently unavailable for the free tier. Therefore, the application uses ExchangeRate.host, a reliable and well-documented free alternative, while maintaining all original functional requirements.
 ## 📱 Features
 
 - ✅ **Real-time Currency Conversion** - Convert between 150+ currencies

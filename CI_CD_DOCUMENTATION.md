@@ -32,7 +32,7 @@ We have two main workflows:
 Steps:
 1. Checkout code
 2. Setup Java 17
-3. Setup Flutter 3.24.5
+3. Setup Flutter 3.35.1
 4. Install dependencies
 5. Verify code formatting
 6. Analyze code (flutter analyze)
@@ -155,12 +155,12 @@ After successful builds, you can download artifacts:
 
 ### Flutter Version
 
-Current: `3.24.5` (stable)
+Current: `3.35.1` (stable)
 
 To change:
 ```yaml
 # In .github/workflows/ci.yml
-flutter-version: '3.24.5'  # Change this
+flutter-version: '3.35.1'  # Change this
 ```
 
 ### Java Version
@@ -285,7 +285,7 @@ Build multiple versions in parallel:
 ```yaml
 strategy:
   matrix:
-    flutter-version: ['3.24.5', '3.27.0']
+    flutter-version: ['3.35.1', '3.27.0']
 ```
 
 ### 4. Conditional Jobs
