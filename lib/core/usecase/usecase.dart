@@ -7,11 +7,9 @@ import 'package:currency_converter/core/network/api_result.dart';
 ///
 /// [T] is the return type of the use case.
 /// [Params] is the type of parameters the use case accepts.
-abstract class UseCase<T, Params> {
-  /// Executes the use case.
-  Future<ApiResult<T>> call(Params params);
+abstract class UseCase<Type, Params> {
+  Future<ApiResult<Type>> call(Params params);
 }
-
 /// Use case that doesn't require any parameters.
 class NoParams {
   const NoParams();

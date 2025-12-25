@@ -19,15 +19,17 @@ abstract class ApiService {
     @Query('from') String from,
     @Query('to') String to,
     @Query('amount') double amount,
+    @Query('access_key') String accessKey,
   );
 
   /// Gets historical exchange rates for a time period.
   @GET(ApiConstants.timeframe)
   Future<HttpResponse<dynamic>> getTimeframe(
+    @Query('access_key') String accessKey,
+    @Query('source') String source,
+    @Query('currencies') String currencies,
     @Query('start_date') String startDate,
     @Query('end_date') String endDate,
-    @Query('base') String base,
-    @Query('symbols') String symbols,
   );
 
   /// Gets live exchange rates.

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/colors.dart';
+import '../../domain/entities/exchange_history.dart';
+import '../cubit/exchange_history_cubit.dart';
+import '../cubit/exchange_history_state.dart';
 import '../widgets/currency_pair_header.dart';
 import '../widgets/exchange_rate_display.dart';
 import '../widgets/time_period_selector.dart';
@@ -8,7 +13,7 @@ import '../widgets/history_chart.dart';
 import '../widgets/statistics_row.dart';
 
 /// Page displaying historical exchange rate data.
-class ExchangeHistoryPage extends StatefulWidget {
+class ExchangeHistoryPage extends StatelessWidget {
   const ExchangeHistoryPage({
     super.key,
     this.fromCurrency = 'USD',
@@ -30,55 +35,55 @@ class ExchangeHistoryPage extends StatefulWidget {
   final String toCurrencyName;
 
   @override
-  State<ExchangeHistoryPage> createState() => _ExchangeHistoryPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<ExchangeHistoryCubit>(
+      create: (context) => sl<ExchangeHistoryCubit>()
+        ..loadHistory(
+          sourceCurrency: fromCurrency,
+          targetCurrency: toCurrency,
+          sourceCurrencyName: fromCurrencyName,
+          targetCurrencyName: toCurrencyName,
+          days: 7,
+        ),
+      child: const _ExchangeHistoryView(),
+    );
+  }
 }
 
-class _ExchangeHistoryPageState extends State<ExchangeHistoryPage> {
-  // State
-  TimePeriod _selectedPeriod = TimePeriod.oneWeek;
-  late String _fromCurrency;
-  late String _toCurrency;
-  late String _fromCurrencyName;
-  late String _toCurrencyName;
-
-  // Mock data
-  double _currentRate = 0.9245;
-  double _changePercentage = 0.05;
-  bool _isPositive = true;
-  double _highRate = 0.9310;
-  double _lowRate = 0.9105;
-  double _avgRate = 0.9200;
+class _ExchangeHistoryView extends StatefulWidget {
+  const _ExchangeHistoryView();
 
   @override
-  void initState() {
-    super.initState();
-    _fromCurrency = widget.fromCurrency;
-    _toCurrency = widget.toCurrency;
-    _fromCurrencyName = widget.fromCurrencyName;
-    _toCurrencyName = widget.toCurrencyName;
-  }
+  State<_ExchangeHistoryView> createState() => _ExchangeHistoryViewState();
+}
+
+class _ExchangeHistoryViewState extends State<_ExchangeHistoryView> {
+  TimePeriod _selectedPeriod = TimePeriod.oneWeek;
 
   void _onPeriodChanged(TimePeriod period) {
     setState(() {
       _selectedPeriod = period;
-      // TODO: Fetch new data based on period
     });
+
+    final days = _getDaysForPeriod(period);
+    context.read<ExchangeHistoryCubit>().changePeriod(days);
+  }
+
+  int _getDaysForPeriod(TimePeriod period) {
+    switch (period) {
+      case TimePeriod.oneWeek:
+        return 7;
+      case TimePeriod.oneMonth:
+        return 30;
+      case TimePeriod.threeMonths:
+        return 90;
+      case TimePeriod.oneYear:
+        return 365;
+    }
   }
 
   void _onSwapCurrencies() {
-    setState(() {
-      final tempCurrency = _fromCurrency;
-      final tempName = _fromCurrencyName;
-      _fromCurrency = _toCurrency;
-      _fromCurrencyName = _toCurrencyName;
-      _toCurrency = tempCurrency;
-      _toCurrencyName = tempName;
-      // Recalculate inverse rate
-      _currentRate = 1 / _currentRate;
-      _highRate = 1 / _lowRate;
-      _lowRate = 1 / _highRate;
-      _avgRate = 1 / _avgRate;
-    });
+    context.read<ExchangeHistoryCubit>().swapCurrencies();
   }
 
   String? _getFlagUrl(String currencyCode) {
@@ -104,46 +109,34 @@ class _ExchangeHistoryPageState extends State<ExchangeHistoryPage> {
     return null;
   }
 
+  List<HistoryChartData> _convertToChartData(List<RateDataPoint> rates) {
+    return rates
+        .map((r) => HistoryChartData(date: r.date, rate: r.rate))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       appBar: _buildAppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 2.h),
-              // Currency info card
-              _buildCurrencyInfoCard(),
-              SizedBox(height: 3.h),
-              // Time period selector
-              TimePeriodSelector(
-                selectedPeriod: _selectedPeriod,
-                onPeriodChanged: _onPeriodChanged,
-              ),
-              SizedBox(height: 2.h),
-              // Chart
-              HistoryChart(
-                showDayLabels: false,
-              ),
-              SizedBox(height: 1.h),
-              // Day labels
-              const DayLabelsRow(),
-              SizedBox(height: 4.h),
-              // Statistics
-              StatisticsRow(
-                high: _highRate,
-                low: _lowRate,
-                average: _avgRate,
-                periodLabel: _selectedPeriod.label,
-              ),
-              SizedBox(height: 4.h),
-            ],
-          ),
-        ),
+      body: BlocBuilder<ExchangeHistoryCubit, ExchangeHistoryState>(
+        builder: (context, state) {
+          if (state is ExchangeHistoryInitial ||
+              state is ExchangeHistoryLoading) {
+            return _buildLoadingState();
+          }
+
+          if (state is ExchangeHistoryError) {
+            return _buildErrorState(state);
+          }
+
+          if (state is ExchangeHistoryLoaded) {
+            return _buildLoadedState(state);
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
@@ -184,7 +177,108 @@ class _ExchangeHistoryPageState extends State<ExchangeHistoryPage> {
     );
   }
 
-  Widget _buildCurrencyInfoCard() {
+  Widget _buildLoadingState() {
+    return const Center(
+      child: CircularProgressIndicator(color: AppColors.cyan),
+    );
+  }
+
+  Widget _buildErrorState(ExchangeHistoryError state) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(5.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 64,
+              color: AppColors.textSecondary,
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              'Failed to load exchange history',
+              style: TextStyle(
+                fontSize: 16.dp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 1.h),
+            Text(
+              state.message,
+              style: TextStyle(fontSize: 14.dp, color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 3.h),
+            ElevatedButton(
+              onPressed: () {
+                context.read<ExchangeHistoryCubit>().retry();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.cyan,
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 1.5.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Retry',
+                style: TextStyle(
+                  fontSize: 14.dp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadedState(ExchangeHistoryLoaded state) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 5.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 2.h),
+            // Currency info card
+            _buildCurrencyInfoCard(state),
+            SizedBox(height: 3.h),
+            // Time period selector
+            TimePeriodSelector(
+              selectedPeriod: _selectedPeriod,
+              onPeriodChanged: _onPeriodChanged,
+            ),
+            SizedBox(height: 2.h),
+            // Chart
+            HistoryChart(
+              data: _convertToChartData(state.chartData),
+              showDayLabels: false,
+            ),
+            SizedBox(height: 1.h),
+            // Day labels (only show for 1W period)
+            if (_selectedPeriod == TimePeriod.oneWeek) const DayLabelsRow(),
+            SizedBox(height: 4.h),
+            // Statistics
+            StatisticsRow(
+              high: state.highRate,
+              low: state.lowRate,
+              average: state.averageRate,
+              periodLabel: _selectedPeriod.label,
+            ),
+            SizedBox(height: 4.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrencyInfoCard(ExchangeHistoryLoaded state) {
     return Container(
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
@@ -203,21 +297,21 @@ class _ExchangeHistoryPageState extends State<ExchangeHistoryPage> {
         children: [
           // Currency pair header
           CurrencyPairHeader(
-            fromCurrency: _fromCurrency,
-            toCurrency: _toCurrency,
-            fromCurrencyName: _fromCurrencyName,
-            toCurrencyName: _toCurrencyName,
-            fromFlagUrl: _getFlagUrl(_fromCurrency),
-            toFlagUrl: _getFlagUrl(_toCurrency),
+            fromCurrency: state.sourceCurrency,
+            toCurrency: state.targetCurrency,
+            fromCurrencyName: state.sourceCurrencyName,
+            toCurrencyName: state.targetCurrencyName,
+            fromFlagUrl: _getFlagUrl(state.sourceCurrency),
+            toFlagUrl: _getFlagUrl(state.targetCurrency),
             onSwapTap: _onSwapCurrencies,
           ),
           SizedBox(height: 2.h),
           // Exchange rate display
           ExchangeRateDisplay(
-            rate: _currentRate,
-            toCurrency: _toCurrency,
-            changePercentage: _changePercentage,
-            isPositive: _isPositive,
+            rate: state.currentRate,
+            toCurrency: state.targetCurrency,
+            changePercentage: state.changePercentage,
+            isPositive: state.isPositiveChange,
           ),
         ],
       ),

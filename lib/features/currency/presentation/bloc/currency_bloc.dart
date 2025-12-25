@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:currency_converter/core/utils/conest.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
@@ -15,9 +16,9 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   CurrencyBloc({
     required GetCurrencies getCurrencies,
     required CurrencyRepository repository,
-  })  : _getCurrencies = getCurrencies,
-        _repository = repository,
-        super(const CurrencyInitial()) {
+  }) : _getCurrencies = getCurrencies,
+       _repository = repository,
+       super(const CurrencyInitial()) {
     on<LoadCurrencies>(_onLoadCurrencies);
     on<RefreshCurrencies>(_onRefreshCurrencies);
     on<SearchCurrencies>(_onSearchCurrencies);
@@ -26,21 +27,6 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   final GetCurrencies _getCurrencies;
   final CurrencyRepository _repository;
 
-  /// Popular currency codes.
-  static const _popularCurrencyCodes = [
-    'USD',
-    'EUR',
-    'GBP',
-    'JPY',
-    'AUD',
-    'CAD',
-    'CHF',
-    'CNY',
-    'EGP',
-    'SAR',
-    'AED',
-    'KWD',
-  ];
 
   /// Handles [LoadCurrencies] event.
   Future<void> _onLoadCurrencies(
@@ -63,11 +49,13 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
         name: 'CurrencyBloc',
       );
 
-      emit(CurrencyLoaded(
-        currencies: currencies,
-        popularCurrencies: popularCurrencies,
-        isFromCache: isFromCache,
-      ));
+      emit(
+        CurrencyLoaded(
+          currencies: currencies,
+          popularCurrencies: popularCurrencies,
+          isFromCache: isFromCache,
+        ),
+      );
     } else {
       final errorMessage =
           result.errorHandler?.failure.message ?? 'Unknown error';
@@ -103,11 +91,13 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
         name: 'CurrencyBloc',
       );
 
-      emit(CurrencyLoaded(
-        currencies: currencies,
-        popularCurrencies: popularCurrencies,
-        isFromCache: false,
-      ));
+      emit(
+        CurrencyLoaded(
+          currencies: currencies,
+          popularCurrencies: popularCurrencies,
+          isFromCache: false,
+        ),
+      );
     } else {
       final errorMessage =
           result.errorHandler?.failure.message ?? 'Unknown error';
@@ -130,10 +120,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     final query = event.query.toLowerCase().trim();
 
     if (query.isEmpty) {
-      emit(currentState.copyWith(
-        searchQuery: '',
-        filteredCurrencies: null,
-      ));
+      emit(currentState.copyWith(searchQuery: '', filteredCurrencies: null));
       return;
     }
 
@@ -142,17 +129,16 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
           currency.name.toLowerCase().contains(query);
     }).toList();
 
-    emit(currentState.copyWith(
-      searchQuery: query,
-      filteredCurrencies: filtered,
-    ));
+    emit(
+      currentState.copyWith(searchQuery: query, filteredCurrencies: filtered),
+    );
   }
 
   /// Extracts popular currencies from the full list.
   List<Currency> _extractPopularCurrencies(List<Currency> currencies) {
     final popularList = <Currency>[];
 
-    for (final code in _popularCurrencyCodes) {
+    for (final code in popularCurrencyCodes) {
       final currency = currencies.firstWhere(
         (c) => c.code == code,
         orElse: () => Currency(code: code, name: code),

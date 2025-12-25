@@ -44,12 +44,14 @@ class _ApiService implements ApiService {
     String from,
     String to,
     double amount,
+    String accessKey,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'from': from,
       r'to': to,
       r'amount': amount,
+      r'access_key': accessKey,
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -71,17 +73,19 @@ class _ApiService implements ApiService {
 
   @override
   Future<HttpResponse<dynamic>> getTimeframe(
+    String accessKey,
+    String source,
+    String currencies,
     String startDate,
     String endDate,
-    String base,
-    String symbols,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
+      r'access_key': accessKey,
+      r'source': source,
+      r'currencies': currencies,
       r'start_date': startDate,
       r'end_date': endDate,
-      r'base': base,
-      r'symbols': symbols,
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

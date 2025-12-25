@@ -1,11 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../config/routes/route_definitions/exchange_history_routes.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/colors.dart';
 import '../../../currency/domain/entities/currency.dart';
+import '../cubit/convert_cubit.dart';
+import '../cubit/convert_state.dart';
 import '../widgets/exchange_rate_card.dart';
 import '../widgets/currency_input_card.dart';
 import '../widgets/quick_select_chips.dart';
@@ -21,89 +24,109 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Controllers
   final TextEditingController _amountController = TextEditingController();
-  Timer? _debounceTimer;
-  
-  // Debounce duration in milliseconds
-  static const int _debounceDuration = 500;
 
-  // Mock data for UI demonstration
+  // Currency selection
   String _fromCurrency = 'USD';
   String _fromCurrencyName = 'United States Dollar';
   String _toCurrency = 'EUR';
   String _toCurrencyName = 'Euro';
-  String _convertedAmount = '0.00';
-  double _exchangeRate = 0.92;
   int? _selectedQuickAmount;
+
+  // Cubit instance
+  late final ConvertCubit _convertCubit;
 
   @override
   void initState() {
     super.initState();
-    _amountController.text = '1000';
-    _convertAmount(_amountController.text);
+    _convertCubit = sl<ConvertCubit>();
+    _amountController.text = '1';
+
+    // Initial conversion
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _triggerConversion(immediate: true);
+    });
   }
 
   @override
   void dispose() {
     _amountController.dispose();
-    _debounceTimer?.cancel();
+    _convertCubit.close();
     super.dispose();
   }
 
   void _onAmountChanged(String value) {
-    // Cancel previous timer
-    _debounceTimer?.cancel();
-    
     // Clear quick select when user types
     if (_selectedQuickAmount != null) {
       setState(() {
         _selectedQuickAmount = null;
       });
     }
-    
-    // Start new debounce timer
-    _debounceTimer = Timer(const Duration(milliseconds: _debounceDuration), () {
-      _convertAmount(value);
-    });
+
+    final amount = double.tryParse(value) ?? 0;
+    if (amount > 0) {
+      // Use debounce for user typing
+      _convertCubit.convertWithDebounce(
+        from: _fromCurrency,
+        to: _toCurrency,
+        amount: amount,
+      );
+    }
   }
 
-  void _convertAmount(String value) {
-    final amount = double.tryParse(value) ?? 0;
-    setState(() {
-      _convertedAmount = (amount * _exchangeRate).toStringAsFixed(2);
-    });
-    // TODO: Call API for real conversion
-    debugPrint('Converting: $value to $_convertedAmount');
+  void _triggerConversion({bool immediate = false}) {
+    final amount = double.tryParse(_amountController.text) ?? 0;
+    if (amount > 0) {
+      if (immediate) {
+        _convertCubit.convertImmediately(
+          from: _fromCurrency,
+          to: _toCurrency,
+          amount: amount,
+        );
+      } else {
+        _convertCubit.convertWithDebounce(
+          from: _fromCurrency,
+          to: _toCurrency,
+          amount: amount,
+        );
+      }
+    }
   }
 
   List<QuickSelectOption> get _quickSelectOptions => [
-        QuickSelectOption(
-          amount: 100,
-          currency: _fromCurrency,
-          isSelected: _selectedQuickAmount == 100,
-        ),
-        QuickSelectOption(
-          amount: 500,
-          currency: _fromCurrency,
-          isSelected: _selectedQuickAmount == 500,
-        ),
-        QuickSelectOption(
-          amount: 1000,
-          currency: _fromCurrency,
-          isSelected: _selectedQuickAmount == 1000,
-        ),
-        QuickSelectOption(
-          amount: 5000,
-          currency: _fromCurrency,
-          isSelected: _selectedQuickAmount == 5000,
-        ),
-      ];
+    QuickSelectOption(
+      amount: 100,
+      currency: _fromCurrency,
+      isSelected: _selectedQuickAmount == 100,
+    ),
+    QuickSelectOption(
+      amount: 500,
+      currency: _fromCurrency,
+      isSelected: _selectedQuickAmount == 500,
+    ),
+    QuickSelectOption(
+      amount: 1000,
+      currency: _fromCurrency,
+      isSelected: _selectedQuickAmount == 1000,
+    ),
+    QuickSelectOption(
+      amount: 5000,
+      currency: _fromCurrency,
+      isSelected: _selectedQuickAmount == 5000,
+    ),
+  ];
 
   void _onQuickSelectTapped(QuickSelectOption option) {
     _amountController.text = option.amount.toString();
     setState(() {
       _selectedQuickAmount = option.amount;
-      _convertedAmount = (option.amount * _exchangeRate).toStringAsFixed(2);
     });
+
+    // Call API immediately for quick select
+    _convertCubit.convertImmediately(
+      from: _fromCurrency,
+      to: _toCurrency,
+      amount: option.amount.toDouble(),
+    );
   }
 
   void _onSwapCurrencies() {
@@ -114,11 +137,17 @@ class _HomePageState extends State<HomePage> {
       _fromCurrencyName = _toCurrencyName;
       _toCurrency = tempCurrency;
       _toCurrencyName = tempName;
-      // Recalculate with inverse rate
-      _exchangeRate = 1 / _exchangeRate;
-      final amount = double.tryParse(_amountController.text) ?? 0;
-      _convertedAmount = (amount * _exchangeRate).toStringAsFixed(2);
     });
+
+    // Call API immediately for swap
+    final amount = double.tryParse(_amountController.text) ?? 0;
+    if (amount > 0) {
+      _convertCubit.convertImmediately(
+        from: _fromCurrency,
+        to: _toCurrency,
+        amount: amount,
+      );
+    }
   }
 
   Future<void> _openFromCurrencyPicker() async {
@@ -130,10 +159,10 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _fromCurrency = result.code;
         _fromCurrencyName = result.name;
-        // Recalculate conversion
-        final amount = double.tryParse(_amountController.text) ?? 0;
-        _convertedAmount = (amount * _exchangeRate).toStringAsFixed(2);
       });
+
+      // Call API immediately when currency changes
+      _triggerConversion(immediate: true);
     }
   }
 
@@ -146,10 +175,10 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _toCurrency = result.code;
         _toCurrencyName = result.name;
-        // Recalculate conversion
-        final amount = double.tryParse(_amountController.text) ?? 0;
-        _convertedAmount = (amount * _exchangeRate).toStringAsFixed(2);
       });
+
+      // Call API immediately when currency changes
+      _triggerConversion(immediate: true);
     }
   }
 
@@ -165,41 +194,62 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String? _getFlagUrl(String currencyCode) {
+    // Map currency codes to country codes for flag
+    final currencyToCountry = {
+      'USD': 'us',
+      'EUR': 'eu',
+      'GBP': 'gb',
+      'JPY': 'jp',
+      'EGP': 'eg',
+      'SAR': 'sa',
+      'AED': 'ae',
+      'CAD': 'ca',
+      'AUD': 'au',
+      'CHF': 'ch',
+    };
+
+    final countryCode = currencyToCountry[currencyCode];
+    if (countryCode != null) {
+      return 'https://flagcdn.com/w40/$countryCode.png';
+    }
+
+    // Default: use first two letters of currency code
+    if (currencyCode.length >= 2) {
+      return 'https://flagcdn.com/w40/${currencyCode.substring(0, 2).toLowerCase()}.png';
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 2.h),
-              // Header
-              _buildHeader(),
-              SizedBox(height: 3.h),
-              // Exchange Rate Card with Chart
-              ExchangeRateCard(
-                fromCurrency: _fromCurrency,
-                toCurrency: _toCurrency,
-                rate: _exchangeRate,
-                onTap: _openExchangeHistory,
-              ),
-              SizedBox(height: 3.h),
-              // Currency Converter Section
-              _buildConverterSection(),
-              SizedBox(height: 2.h),
-              // Exchange Rate Info
-              _buildExchangeRateInfo(),
-              SizedBox(height: 3.h),
-              // Quick Select
-              QuickSelectChips(
-                options: _quickSelectOptions,
-                onOptionSelected: _onQuickSelectTapped,
-              ),
-              SizedBox(height: 4.h),
-            ],
+    return BlocProvider.value(
+      value: _convertCubit,
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 5.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 2.h),
+                _buildHeader(),
+                SizedBox(height: 3.h),
+                _buildExchangeRateCard(),
+                SizedBox(height: 3.h),
+                _buildConverterSection(),
+                SizedBox(height: 2.h),
+                _buildExchangeRateInfo(),
+                SizedBox(height: 3.h),
+                QuickSelectChips(
+                  options: _quickSelectOptions,
+                  onOptionSelected: _onQuickSelectTapped,
+                ),
+                SizedBox(height: 4.h),
+              ],
+            ),
           ),
         ),
       ),
@@ -247,91 +297,162 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildExchangeRateCard() {
+    return BlocBuilder<ConvertCubit, ConvertState>(
+      builder: (context, state) {
+        double rate = 0.0;
+
+        if (state is ConvertSuccess) {
+          rate = state.rate;
+        } else if (state is ConvertLoading) {
+          // Show previous rate if available
+          rate = 0.0;
+        }
+
+        return ExchangeRateCard(
+          fromCurrency: _fromCurrency,
+          toCurrency: _toCurrency,
+          rate: rate,
+          onTap: _openExchangeHistory,
+        );
+      },
+    );
+  }
+
   Widget _buildConverterSection() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Column(
+    return BlocBuilder<ConvertCubit, ConvertState>(
+      builder: (context, state) {
+        String convertedAmount = '0.00';
+        bool isLoading = false;
+        String? errorMessage;
+
+        if (state is ConvertSuccess) {
+          convertedAmount = state.convertedAmount.toStringAsFixed(2);
+        } else if (state is ConvertLoading) {
+          isLoading = true;
+          // Show loading indicator
+        } else if (state is ConvertError) {
+          errorMessage = state.message;
+        }
+
+        return Stack(
+          alignment: Alignment.center,
           children: [
-            // YOU PAY Card
-            CurrencyInputCard(
-              label: 'YOU PAY',
-              controller: _amountController,
-              currencyCode: _fromCurrency,
-              currencyName: _fromCurrencyName,
-              flagUrl: _getFlagUrl(_fromCurrency),
-              isEditable: true,
-              onAmountChanged: _onAmountChanged,
-              onCurrencyTap: _openFromCurrencyPicker,
+            Column(
+              children: [
+                // YOU PAY Card
+                CurrencyInputCard(
+                  label: 'YOU PAY',
+                  controller: _amountController,
+                  currencyCode: _fromCurrency,
+                  currencyName: _fromCurrencyName,
+                  flagUrl: _getFlagUrl(_fromCurrency),
+                  isEditable: true,
+                  onAmountChanged: _onAmountChanged,
+                  onCurrencyTap: _openFromCurrencyPicker,
+                ),
+                SizedBox(height: 2.h),
+                // YOU GET Card with loading/error states
+                _buildYouGetCard(
+                  convertedAmount: convertedAmount,
+                  isLoading: isLoading,
+                  errorMessage: errorMessage,
+                ),
+              ],
             ),
-            SizedBox(height: 2.h),
-            // YOU GET Card
-            CurrencyInputCard(
-              label: 'YOU GET',
-              amount: _convertedAmount,
-              currencyCode: _toCurrency,
-              currencyName: _toCurrencyName,
-              flagUrl: _getFlagUrl(_toCurrency),
-              isResult: true,
-              onCurrencyTap: _openToCurrencyPicker,
-            ),
+            // Swap Button
+            Positioned(child: SwapCurrencyButton(onTap: _onSwapCurrencies)),
           ],
+        );
+      },
+    );
+  }
+
+  Widget _buildYouGetCard({
+    required String convertedAmount,
+    required bool isLoading,
+    String? errorMessage,
+  }) {
+    return Stack(
+      children: [
+        CurrencyInputCard(
+          label: 'YOU GET',
+          amount: isLoading ? '...' : convertedAmount,
+          currencyCode: _toCurrency,
+          currencyName: _toCurrencyName,
+          flagUrl: _getFlagUrl(_toCurrency),
+          isResult: true,
+          onCurrencyTap: _openToCurrencyPicker,
         ),
-        // Swap Button
-        Positioned(
-          child: SwapCurrencyButton(
-            onTap: _onSwapCurrencies,
+        if (isLoading)
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.cyan,
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
+        if (errorMessage != null && !isLoading)
+          Positioned(
+            bottom: 8,
+            left: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                errorMessage,
+                style: TextStyle(fontSize: 11.dp, color: Colors.red.shade700),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
       ],
     );
   }
 
   Widget _buildExchangeRateInfo() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.info_outline_rounded,
-          size: 16,
-          color: AppColors.textMuted,
-        ),
-        SizedBox(width: 2.w),
-        Text(
-          'Mid-market exchange rate at ${_getCurrentTime()}',
-          style: TextStyle(
-            fontSize: 12.dp,
-            color: AppColors.textMuted,
-          ),
-        ),
-      ],
+    return BlocBuilder<ConvertCubit, ConvertState>(
+      builder: (context, state) {
+        String timeText = 'Calculating...';
+
+        if (state is ConvertSuccess) {
+          timeText = state.formattedTimestamp;
+        } else if (state is ConvertError) {
+          timeText = 'Error';
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info_outline_rounded,
+              size: 16,
+              color: AppColors.textMuted,
+            ),
+            SizedBox(width: 2.w),
+            Text(
+              'Last updated at $timeText',
+              style: TextStyle(fontSize: 12.dp, color: AppColors.textMuted),
+            ),
+          ],
+        );
+      },
     );
-  }
-
-  String _getCurrentTime() {
-    final now = DateTime.now();
-    return '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} UTC';
-  }
-
-  String? _getFlagUrl(String currencyCode) {
-    // Map currency codes to country codes for flag
-    final currencyToCountry = {
-      'USD': 'us',
-      'EUR': 'eu',
-      'GBP': 'gb',
-      'JPY': 'jp',
-      'EGP': 'eg',
-      'SAR': 'sa',
-      'AED': 'ae',
-      'CAD': 'ca',
-      'AUD': 'au',
-      'CHF': 'ch',
-    };
-
-    final countryCode = currencyToCountry[currencyCode];
-    if (countryCode != null) {
-      return 'https://flagcdn.com/w40/$countryCode.png';
-    }
-    return null;
   }
 }
