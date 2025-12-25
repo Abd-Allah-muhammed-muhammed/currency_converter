@@ -1,8 +1,8 @@
+import 'package:currency_converter/core/di/injectable_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/utils/colors.dart';
+ import '../../../../core/utils/colors.dart';
 import '../../domain/entities/exchange_history.dart';
 import '../cubit/exchange_history_cubit.dart';
 import '../cubit/exchange_history_state.dart';
@@ -37,7 +37,7 @@ class ExchangeHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ExchangeHistoryCubit>(
-      create: (context) => sl<ExchangeHistoryCubit>()
+      create: (context) => getIt<ExchangeHistoryCubit>()
         ..loadHistory(
           sourceCurrency: fromCurrency,
           targetCurrency: toCurrency,

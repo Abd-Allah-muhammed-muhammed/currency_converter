@@ -49,7 +49,7 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $tableCurrencies (
-        $columnCode TEXT PRIMARY KEY,
+        code TEXT PRIMARY KEY,
         $columnName TEXT NOT NULL,
         $columnFlagUrl TEXT
       )

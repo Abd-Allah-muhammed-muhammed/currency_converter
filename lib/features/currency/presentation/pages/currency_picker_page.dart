@@ -1,8 +1,8 @@
+import 'package:currency_converter/core/di/injectable_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import 'package:currency_converter/core/di/injection_container.dart';
-import 'package:currency_converter/core/utils/colors.dart';
+ import 'package:currency_converter/core/utils/colors.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
 import 'package:currency_converter/features/currency/presentation/bloc/bloc.dart';
 import '../widgets/currency_search_field.dart';
@@ -37,7 +37,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
   @override
   void initState() {
     super.initState();
-    _currencyBloc = sl<CurrencyBloc>();
+    _currencyBloc = getIt<CurrencyBloc>();
     // Load currencies when page opens
     _currencyBloc.add(const LoadCurrencies());
   }

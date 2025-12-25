@@ -1,11 +1,11 @@
+import 'package:currency_converter/core/di/injectable_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../config/routes/route_definitions/exchange_history_routes.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/utils/colors.dart';
+ import '../../../../core/utils/colors.dart';
 import '../../../currency/domain/entities/currency.dart';
 import '../cubit/convert_cubit.dart';
 import '../cubit/convert_state.dart';
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _convertCubit = sl<ConvertCubit>();
+    _convertCubit = getIt<ConvertCubit>();
 
     // Restore currencies and amount from preferences via cubit
     _fromCurrency = _convertCubit.fromCurrency;
