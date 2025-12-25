@@ -1,71 +1,70 @@
+import 'package:currency_converter/core/network/api_error_handler.dart';
+import 'package:currency_converter/core/network/api_error_model.dart';
+import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/storage/preferences_repository.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
-import 'package:currency_converter/features/home/domain/repositories/conversion_repository.dart';
 import 'package:currency_converter/features/home/domain/usecases/convert_currency.dart';
 import 'package:currency_converter/features/home/presentation/cubit/convert_cubit.dart';
 import 'package:currency_converter/features/home/presentation/cubit/convert_state.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-/// Mock implementation of ConversionRepository for testing.
-class MockConversionRepository implements ConversionRepository {
-  MockConversionRepository({
+/// Mock implementation of ConvertCurrency for testing.
+class MockConvertCurrency implements ConvertCurrency {
+  MockConvertCurrency({
     this.result,
-    this.exception,
     this.delay = Duration.zero,
   });
 
   /// The result to return when called.
-  ConversionResult? result;
-
-  /// The exception to throw when called.
-  Exception? exception;
+  ApiResult<ConversionResult>? result;
 
   /// Delay before returning result (for testing async behavior).
   Duration delay;
 
   /// Track call parameters.
-  final List<({String from, String to, double amount})> calls = [];
+  final List<ConvertCurrencyParams> calls = [];
 
   @override
-  Future<ConversionResult> convert({
-    required String from,
-    required String to,
-    required double amount,
-  }) async {
-    calls.add((from: from, to: to, amount: amount));
+  Future<ApiResult<ConversionResult>> call(ConvertCurrencyParams params) async {
+    calls.add(params);
 
     if (delay > Duration.zero) {
       await Future.delayed(delay);
     }
 
-    if (exception != null) {
-      throw exception!;
-    }
-
-    return result ?? _defaultResult(from, to, amount);
+    return result ?? ApiResult.success(_defaultResult(params));
   }
 
-  ConversionResult _defaultResult(String from, String to, double amount) {
+  ConversionResult _defaultResult(ConvertCurrencyParams params) {
     return ConversionResult(
-      fromCurrency: from,
-      toCurrency: to,
-      amount: amount,
+      fromCurrency: params.from,
+      toCurrency: params.to,
+      amount: params.amount,
       quote: 0.92,
-      result: amount * 0.92,
+      result: params.amount * 0.92,
       timestamp: DateTime.utc(2025, 12, 25, 12, 0),
     );
   }
 }
 
+/// Creates a PreferencesRepository with fake SharedPreferences for testing.
+Future<PreferencesRepository> createMockPreferencesRepository() async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+  return PreferencesRepository(prefs);
+}
+
 void main() {
   group('ConvertCubit', () {
     late ConvertCubit cubit;
-    late MockConversionRepository mockRepository;
-    late ConvertCurrency convertCurrency;
+    late MockConvertCurrency mockConvertCurrency;
+    late PreferencesRepository mockPreferencesRepository;
 
-    setUp(() {
-      mockRepository = MockConversionRepository();
-      convertCurrency = ConvertCurrency(mockRepository);
-      cubit = ConvertCubit(convertCurrency: convertCurrency);
+    setUp(() async {
+      mockConvertCurrency = MockConvertCurrency();
+      mockPreferencesRepository = await createMockPreferencesRepository();
+      cubit = ConvertCubit(mockConvertCurrency, mockPreferencesRepository);
     });
 
     tearDown(() {
@@ -77,46 +76,50 @@ void main() {
     });
 
     group('convertImmediately', () {
-      test(
-        'should emit Loading then Success when conversion succeeds',
-        () async {
-          // Arrange
-          final expectedResult = ConversionResult(
-            fromCurrency: 'USD',
-            toCurrency: 'EUR',
-            amount: 100,
-            quote: 0.92,
-            result: 92.0,
-            timestamp: DateTime.utc(2025, 12, 25, 12, 0),
-          );
-          mockRepository.result = expectedResult;
+      test('should emit Loading then Success when conversion succeeds', () async {
+        // Arrange
+        final expectedResult = ConversionResult(
+          fromCurrency: 'USD',
+          toCurrency: 'EUR',
+          amount: 100,
+          quote: 0.92,
+          result: 92.0,
+          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+        );
+        mockConvertCurrency.result = ApiResult.success(expectedResult);
 
-          // Act
-          final states = <ConvertState>[];
-          cubit.stream.listen(states.add);
+        // Act
+        final states = <ConvertState>[];
+        cubit.stream.listen(states.add);
 
-          await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
+        await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
 
-          // Wait for stream to process
-          await Future.delayed(const Duration(milliseconds: 50));
+        // Wait for stream to process
+        await Future.delayed(const Duration(milliseconds: 50));
 
-          // Assert
-          expect(states.length, 2);
-          expect(states[0], isA<ConvertLoading>());
-          expect(states[1], isA<ConvertSuccess>());
+        // Assert
+        expect(states.length, 2);
+        expect(states[0], isA<ConvertLoading>());
+        expect(states[1], isA<ConvertSuccess>());
 
-          final successState = states[1] as ConvertSuccess;
-          expect(successState.result.fromCurrency, 'USD');
-          expect(successState.result.toCurrency, 'EUR');
-          expect(successState.result.amount, 100);
-          expect(successState.rate, 0.92);
-          expect(successState.convertedAmount, 92.0);
-        },
-      );
+        final successState = states[1] as ConvertSuccess;
+        expect(successState.result.fromCurrency, 'USD');
+        expect(successState.result.toCurrency, 'EUR');
+        expect(successState.result.amount, 100);
+        expect(successState.rate, 0.92);
+        expect(successState.convertedAmount, 92.0);
+      });
 
       test('should emit Loading then Error when conversion fails', () async {
         // Arrange
-        mockRepository.exception = Exception('API Error');
+        mockConvertCurrency.result = ApiResult.failure(
+          ErrorHandler.fromMessage(
+            ApiErrorModel(
+              code: ResponseCode.defaultError,
+              message: 'API Error',
+            ),
+          ),
+        );
 
         // Act
         final states = <ConvertState>[];
@@ -133,7 +136,7 @@ void main() {
         expect(states[1], isA<ConvertError>());
 
         final errorState = states[1] as ConvertError;
-        expect(errorState.message, 'An unexpected error occurred');
+        expect(errorState.message, 'API Error');
       });
 
       test('should not call API when amount is zero', () async {
@@ -141,7 +144,7 @@ void main() {
         await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 0);
 
         // Assert
-        expect(mockRepository.calls, isEmpty);
+        expect(mockConvertCurrency.calls, isEmpty);
         expect(cubit.state, isA<ConvertInitial>());
       });
 
@@ -150,7 +153,7 @@ void main() {
         await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: -100);
 
         // Assert
-        expect(mockRepository.calls, isEmpty);
+        expect(mockConvertCurrency.calls, isEmpty);
         expect(cubit.state, isA<ConvertInitial>());
       });
     });
@@ -166,14 +169,14 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert - no calls yet
-        expect(mockRepository.calls, isEmpty);
+        expect(mockConvertCurrency.calls, isEmpty);
 
         // Wait for debounce to complete
         await Future.delayed(const Duration(milliseconds: 600));
 
         // Assert - only last call should be made
-        expect(mockRepository.calls.length, 1);
-        expect(mockRepository.calls.first.amount, 100);
+        expect(mockConvertCurrency.calls.length, 1);
+        expect(mockConvertCurrency.calls.first.amount, 100);
       });
 
       test('should not call API when amount is zero', () async {
@@ -184,7 +187,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 1200));
 
         // Assert
-        expect(mockRepository.calls, isEmpty);
+        expect(mockConvertCurrency.calls, isEmpty);
       });
     });
 
@@ -197,7 +200,7 @@ void main() {
         // Set amount by doing an immediate conversion first
         await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
 
-        mockRepository.calls.clear();
+        mockConvertCurrency.calls.clear();
 
         // Act
         await cubit.swapCurrencies();
@@ -207,9 +210,9 @@ void main() {
         expect(cubit.toCurrency, 'USD');
 
         // Should call API with swapped currencies
-        expect(mockRepository.calls.length, 1);
-        expect(mockRepository.calls.first.from, 'EUR');
-        expect(mockRepository.calls.first.to, 'USD');
+        expect(mockConvertCurrency.calls.length, 1);
+        expect(mockConvertCurrency.calls.first.from, 'EUR');
+        expect(mockConvertCurrency.calls.first.to, 'USD');
       });
     });
 
@@ -224,7 +227,7 @@ void main() {
           result: 92.0,
           timestamp: DateTime.utc(2025, 12, 25, 14, 30),
         );
-        mockRepository.result = expectedResult;
+        mockConvertCurrency.result = ApiResult.success(expectedResult);
 
         // Act
         await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);

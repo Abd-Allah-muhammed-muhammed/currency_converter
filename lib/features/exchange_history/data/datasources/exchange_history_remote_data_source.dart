@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_constants.dart';
 import 'package:currency_converter/core/network/api_service.dart';
 import 'package:currency_converter/features/exchange_history/data/models/exchange_history_model.dart';
@@ -26,6 +27,7 @@ abstract class ExchangeHistoryRemoteDataSource {
 }
 
 /// Implementation of [ExchangeHistoryRemoteDataSource] using the API service.
+@LazySingleton(as: ExchangeHistoryRemoteDataSource)
 class ExchangeHistoryRemoteDataSourceImpl
     implements ExchangeHistoryRemoteDataSource {
   ExchangeHistoryRemoteDataSourceImpl(this._apiService);

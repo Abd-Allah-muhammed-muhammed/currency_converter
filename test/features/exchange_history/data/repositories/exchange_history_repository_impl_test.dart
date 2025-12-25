@@ -1,9 +1,6 @@
-import 'package:currency_converter/core/network/api_error_handler.dart';
-import 'package:currency_converter/core/network/api_error_model.dart';
 import 'package:currency_converter/features/exchange_history/data/datasources/exchange_history_remote_data_source.dart';
 import 'package:currency_converter/features/exchange_history/data/models/exchange_history_model.dart';
 import 'package:currency_converter/features/exchange_history/data/repositories/exchange_history_repository_impl.dart';
-import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -48,9 +45,9 @@ class MockExchangeHistoryRemoteDataSource
           'end_date': endDate,
           'source': source,
           'quotes': {
-            '2025-12-19': {'${source}$target': 0.738541},
-            '2025-12-20': {'${source}$target': 0.740000},
-            '2025-12-21': {'${source}$target': 0.750000},
+            '2025-12-19': {'$source$target': 0.738541},
+            '2025-12-20': {'$source$target': 0.740000},
+            '2025-12-21': {'$source$target': 0.750000},
           },
         });
   }

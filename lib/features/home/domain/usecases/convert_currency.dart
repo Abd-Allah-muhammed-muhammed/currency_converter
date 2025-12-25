@@ -1,3 +1,8 @@
+import 'package:injectable/injectable.dart';
+import 'package:currency_converter/core/network/api_error_handler.dart';
+import 'package:currency_converter/core/network/api_error_model.dart';
+import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:currency_converter/features/home/domain/repositories/conversion_repository.dart';
 
@@ -22,35 +27,53 @@ class ConvertCurrencyParams {
 /// Use case for converting currency.
 ///
 /// This use case encapsulates the business logic for currency conversion.
-class ConvertCurrency {
+@lazySingleton
+class ConvertCurrency implements UseCase<ConversionResult, ConvertCurrencyParams> {
   const ConvertCurrency(this._repository);
 
   final ConversionRepository _repository;
 
   /// Executes the use case.
   ///
-  /// Returns a [ConversionResult] on success.
-  /// Throws an exception on failure.
-  Future<ConversionResult> call(ConvertCurrencyParams params) async {
+  /// Returns [ApiResult] containing [ConversionResult] on success,
+  /// or an error on failure.
+  @override
+  Future<ApiResult<ConversionResult>> call(ConvertCurrencyParams params) async {
     // Validate input
     if (params.amount <= 0) {
-      throw ArgumentError('Amount must be greater than zero');
+      return ApiResult.failure(
+        ErrorHandler.fromMessage(
+          ApiErrorModel(
+            code: ResponseCode.badRequest,
+            message: 'Amount must be greater than zero',
+          ),
+        ),
+      );
     }
 
     if (params.from.isEmpty || params.to.isEmpty) {
-      throw ArgumentError('Currency codes cannot be empty');
+      return ApiResult.failure(
+        ErrorHandler.fromMessage(
+          ApiErrorModel(
+            code: ResponseCode.badRequest,
+            message: 'Currency codes cannot be empty',
+          ),
+        ),
+      );
     }
 
     if (params.from == params.to) {
       // Return identity conversion without API call
       final now = DateTime.now().toUtc();
-      return ConversionResult(
-        fromCurrency: params.from,
-        toCurrency: params.to,
-        amount: params.amount,
-        quote: 1.0,
-        result: params.amount,
-        timestamp: now,
+      return ApiResult.success(
+        ConversionResult(
+          fromCurrency: params.from,
+          toCurrency: params.to,
+          amount: params.amount,
+          quote: 1.0,
+          result: params.amount,
+          timestamp: now,
+        ),
       );
     }
 

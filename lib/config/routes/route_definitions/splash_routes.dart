@@ -2,7 +2,7 @@
 
 
 import 'package:currency_converter/config/routes/routes.dart';
-import 'package:currency_converter/features/splash/presentation/pages/SplashPage.dart';
+import 'package:currency_converter/features/splash/presentation/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

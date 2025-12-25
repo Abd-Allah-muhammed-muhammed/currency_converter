@@ -3,6 +3,7 @@ import 'package:currency_converter/core/network/api_service.dart';
 import 'package:dio/dio.dart';
 import 'package:currency_converter/core/network/api_constants.dart';
 import 'package:currency_converter/features/currency/data/models/currency_model.dart';
+import 'package:injectable/injectable.dart';
 
 /// Remote data source for currency operations.
 ///
@@ -15,6 +16,7 @@ abstract class CurrencyRemoteDataSource {
 }
 
 /// Implementation of [CurrencyRemoteDataSource] using Dio.
+@LazySingleton(as: CurrencyRemoteDataSource)
 class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
   CurrencyRemoteDataSourceImpl(this._apiService);
 

@@ -1,5 +1,6 @@
 import 'package:currency_converter/core/database/database_helper.dart';
 import 'package:currency_converter/features/currency/data/models/currency_model.dart';
+import 'package:injectable/injectable.dart';
 
 /// Local data source for currency operations.
 ///
@@ -22,6 +23,7 @@ abstract class CurrencyLocalDataSource {
 }
 
 /// Implementation of [CurrencyLocalDataSource] using SQLite.
+@LazySingleton(as: CurrencyLocalDataSource)
 class CurrencyLocalDataSourceImpl implements CurrencyLocalDataSource {
   CurrencyLocalDataSourceImpl(this.databaseHelper);
 

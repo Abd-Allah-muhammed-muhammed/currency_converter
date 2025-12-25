@@ -1,3 +1,4 @@
+import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 
 /// Repository interface for currency conversion operations.
@@ -11,9 +12,9 @@ abstract class ConversionRepository {
   /// [to] - Target currency code (e.g., 'EUR')
   /// [amount] - Amount to convert
   ///
-  /// Returns a [ConversionResult] on success.
-  /// Throws an exception on failure.
-  Future<ConversionResult> convert({
+  /// Returns [ApiResult] containing [ConversionResult] on success,
+  /// or an error on failure.
+  Future<ApiResult<ConversionResult>> convert({
     required String from,
     required String to,
     required double amount,

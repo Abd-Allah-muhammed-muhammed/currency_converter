@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_constants.dart';
 import 'package:currency_converter/core/network/api_service.dart';
 import 'package:currency_converter/features/home/data/models/conversion_result_model.dart';
@@ -24,6 +25,7 @@ abstract class ConversionRemoteDataSource {
 }
 
 /// Implementation of [ConversionRemoteDataSource] using the API service.
+@LazySingleton(as: ConversionRemoteDataSource)
 class ConversionRemoteDataSourceImpl implements ConversionRemoteDataSource {
   ConversionRemoteDataSourceImpl(this._apiService);
 

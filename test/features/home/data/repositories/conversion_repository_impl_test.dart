@@ -1,7 +1,6 @@
 import 'package:currency_converter/features/home/data/datasources/conversion_remote_data_source.dart';
 import 'package:currency_converter/features/home/data/models/conversion_result_model.dart';
 import 'package:currency_converter/features/home/data/repositories/conversion_repository_impl.dart';
-import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,7 +59,7 @@ void main() {
         expect(mockDataSource.calls.first.amount, 100);
       });
 
-      test('should return ConversionResult entity from model', () async {
+      test('should return ApiResult.success with ConversionResult entity', () async {
         // Arrange
         mockDataSource.result = const ConversionResultModel(
           success: true,
@@ -73,26 +72,31 @@ void main() {
         );
 
         // Act
-        final result = await repository.convert(
+        final apiResult = await repository.convert(
           from: 'CAD',
           to: 'EUR',
           amount: 1000,
         );
 
         // Assert
-        expect(result, isA<ConversionResult>());
-        expect(result.fromCurrency, 'CAD');
-        expect(result.toCurrency, 'EUR');
-        expect(result.amount, 1000);
-        expect(result.quote, 0.620998);
-        expect(result.result, 620.998);
-        expect(
-          result.timestamp,
-          DateTime.fromMillisecondsSinceEpoch(1766664244 * 1000),
+        expect(apiResult.isSuccess, true);
+        apiResult.when(
+          success: (result) {
+            expect(result.fromCurrency, 'CAD');
+            expect(result.toCurrency, 'EUR');
+            expect(result.amount, 1000);
+            expect(result.quote, 0.620998);
+            expect(result.result, 620.998);
+            expect(
+              result.timestamp,
+              DateTime.fromMillisecondsSinceEpoch(1766664244 * 1000),
+            );
+          },
+          failure: (_) => fail('Should not be failure'),
         );
       });
 
-      test('should propagate DioException from data source', () async {
+      test('should return ApiResult.failure on DioException', () async {
         // Arrange
         mockDataSource.exception = DioException(
           requestOptions: RequestOptions(path: '/convert'),
@@ -100,22 +104,36 @@ void main() {
           type: DioExceptionType.connectionTimeout,
         );
 
-        // Act & Assert
-        expect(
-          () => repository.convert(from: 'USD', to: 'EUR', amount: 100),
-          throwsA(isA<DioException>()),
+        // Act
+        final result = await repository.convert(
+          from: 'USD',
+          to: 'EUR',
+          amount: 100,
+        );
+
+        // Assert
+        expect(result.isSuccess, false);
+        result.when(
+          success: (_) => fail('Should not be success'),
+          failure: (error) {
+            expect(error.failure.message, isNotEmpty);
+          },
         );
       });
 
-      test('should propagate general exceptions from data source', () async {
+      test('should return ApiResult.failure on general exceptions', () async {
         // Arrange
         mockDataSource.exception = Exception('Unexpected error');
 
-        // Act & Assert
-        expect(
-          () => repository.convert(from: 'USD', to: 'EUR', amount: 100),
-          throwsA(isA<Exception>()),
+        // Act
+        final result = await repository.convert(
+          from: 'USD',
+          to: 'EUR',
+          amount: 100,
         );
+
+        // Assert
+        expect(result.isSuccess, false);
       });
 
       test('should handle different currency pairs', () async {
@@ -149,15 +167,21 @@ void main() {
         );
 
         // Act
-        final result = await repository.convert(
+        final apiResult = await repository.convert(
           from: 'USD',
           to: 'EUR',
           amount: 1000000000,
         );
 
         // Assert
-        expect(result.amount, 1000000000);
-        expect(result.result, 920000000);
+        expect(apiResult.isSuccess, true);
+        apiResult.when(
+          success: (result) {
+            expect(result.amount, 1000000000);
+            expect(result.result, 920000000);
+          },
+          failure: (_) => fail('Should not be failure'),
+        );
       });
 
       test('should handle very small amounts', () async {
@@ -173,15 +197,21 @@ void main() {
         );
 
         // Act
-        final result = await repository.convert(
+        final apiResult = await repository.convert(
           from: 'BTC',
           to: 'USD',
           amount: 0.00001,
         );
 
         // Assert
-        expect(result.amount, 0.00001);
-        expect(result.result, 0.42);
+        expect(apiResult.isSuccess, true);
+        apiResult.when(
+          success: (result) {
+            expect(result.amount, 0.00001);
+            expect(result.result, 0.42);
+          },
+          failure: (_) => fail('Should not be failure'),
+        );
       });
     });
   });

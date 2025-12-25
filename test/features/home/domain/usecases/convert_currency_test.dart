@@ -1,3 +1,4 @@
+import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:currency_converter/features/home/domain/repositories/conversion_repository.dart';
 import 'package:currency_converter/features/home/domain/usecases/convert_currency.dart';
@@ -5,32 +6,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Mock implementation of ConversionRepository for testing.
 class MockConversionRepository implements ConversionRepository {
-  MockConversionRepository({this.result, this.exception});
+  MockConversionRepository({this.result});
 
-  ConversionResult? result;
-  Exception? exception;
+  ApiResult<ConversionResult>? result;
   final List<({String from, String to, double amount})> calls = [];
 
   @override
-  Future<ConversionResult> convert({
+  Future<ApiResult<ConversionResult>> convert({
     required String from,
     required String to,
     required double amount,
   }) async {
     calls.add((from: from, to: to, amount: amount));
 
-    if (exception != null) {
-      throw exception!;
-    }
-
     return result ??
-        ConversionResult(
-          fromCurrency: from,
-          toCurrency: to,
-          amount: amount,
-          quote: 0.92,
-          result: amount * 0.92,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+        ApiResult.success(
+          ConversionResult(
+            fromCurrency: from,
+            toCurrency: to,
+            amount: amount,
+            quote: 0.92,
+            result: amount * 0.92,
+            timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          ),
         );
   }
 }
@@ -64,7 +62,7 @@ void main() {
         expect(mockRepository.calls.first.amount, 100);
       });
 
-      test('should return conversion result from repository', () async {
+      test('should return ApiResult.success from repository', () async {
         // Arrange
         final expectedResult = ConversionResult(
           fromCurrency: 'USD',
@@ -74,7 +72,7 @@ void main() {
           result: 92.0,
           timestamp: DateTime.utc(2025, 12, 25, 12, 0),
         );
-        mockRepository.result = expectedResult;
+        mockRepository.result = ApiResult.success(expectedResult);
 
         const params = ConvertCurrencyParams(
           from: 'USD',
@@ -83,33 +81,43 @@ void main() {
         );
 
         // Act
-        final result = await useCase(params);
+        final apiResult = await useCase(params);
 
         // Assert
-        expect(result, expectedResult);
+        expect(apiResult.isSuccess, true);
+        apiResult.when(
+          success: (result) {
+            expect(result.fromCurrency, 'USD');
+            expect(result.toCurrency, 'EUR');
+            expect(result.amount, 100);
+            expect(result.quote, 0.92);
+            expect(result.result, 92.0);
+          },
+          failure: (_) => fail('Should not be failure'),
+        );
       });
     });
 
     group('input validation', () {
-      test('should throw ArgumentError when amount is zero', () async {
+      test('should return ApiResult.failure when amount is zero', () async {
         // Arrange
         const params = ConvertCurrencyParams(from: 'USD', to: 'EUR', amount: 0);
 
-        // Act & Assert
-        expect(
-          () => useCase(params),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.message,
-              'message',
-              'Amount must be greater than zero',
-            ),
-          ),
+        // Act
+        final result = await useCase(params);
+
+        // Assert
+        expect(result.isSuccess, false);
+        result.when(
+          success: (_) => fail('Should not be success'),
+          failure: (error) {
+            expect(error.failure.message, 'Amount must be greater than zero');
+          },
         );
         expect(mockRepository.calls, isEmpty);
       });
 
-      test('should throw ArgumentError when amount is negative', () async {
+      test('should return ApiResult.failure when amount is negative', () async {
         // Arrange
         const params = ConvertCurrencyParams(
           from: 'USD',
@@ -117,92 +125,95 @@ void main() {
           amount: -50,
         );
 
-        // Act & Assert
-        expect(
-          () => useCase(params),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.message,
-              'message',
-              'Amount must be greater than zero',
-            ),
-          ),
+        // Act
+        final result = await useCase(params);
+
+        // Assert
+        expect(result.isSuccess, false);
+        result.when(
+          success: (_) => fail('Should not be success'),
+          failure: (error) {
+            expect(error.failure.message, 'Amount must be greater than zero');
+          },
         );
         expect(mockRepository.calls, isEmpty);
       });
 
-      test('should throw ArgumentError when from currency is empty', () async {
+      test('should return ApiResult.failure when from currency is empty', () async {
         // Arrange
         const params = ConvertCurrencyParams(from: '', to: 'EUR', amount: 100);
 
-        // Act & Assert
-        expect(
-          () => useCase(params),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.message,
-              'message',
-              'Currency codes cannot be empty',
-            ),
-          ),
+        // Act
+        final result = await useCase(params);
+
+        // Assert
+        expect(result.isSuccess, false);
+        result.when(
+          success: (_) => fail('Should not be success'),
+          failure: (error) {
+            expect(error.failure.message, 'Currency codes cannot be empty');
+          },
         );
         expect(mockRepository.calls, isEmpty);
       });
 
-      test('should throw ArgumentError when to currency is empty', () async {
+      test('should return ApiResult.failure when to currency is empty', () async {
         // Arrange
         const params = ConvertCurrencyParams(from: 'USD', to: '', amount: 100);
 
-        // Act & Assert
-        expect(
-          () => useCase(params),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.message,
-              'message',
-              'Currency codes cannot be empty',
-            ),
-          ),
+        // Act
+        final result = await useCase(params);
+
+        // Assert
+        expect(result.isSuccess, false);
+        result.when(
+          success: (_) => fail('Should not be success'),
+          failure: (error) {
+            expect(error.failure.message, 'Currency codes cannot be empty');
+          },
         );
         expect(mockRepository.calls, isEmpty);
       });
 
-      test(
-        'should throw ArgumentError when both currencies are empty',
-        () async {
-          // Arrange
-          const params = ConvertCurrencyParams(from: '', to: '', amount: 100);
+      test('should return ApiResult.failure when both currencies are empty', () async {
+        // Arrange
+        const params = ConvertCurrencyParams(from: '', to: '', amount: 100);
 
-          // Act & Assert
-          expect(() => useCase(params), throwsA(isA<ArgumentError>()));
-          expect(mockRepository.calls, isEmpty);
-        },
-      );
+        // Act
+        final result = await useCase(params);
+
+        // Assert
+        expect(result.isSuccess, false);
+        expect(mockRepository.calls, isEmpty);
+      });
     });
 
     group('same currency conversion', () {
-      test(
-        'should return identity conversion without calling repository',
-        () async {
-          // Arrange
-          const params = ConvertCurrencyParams(
-            from: 'USD',
-            to: 'USD',
-            amount: 100,
-          );
+      test('should return identity conversion without calling repository', () async {
+        // Arrange
+        const params = ConvertCurrencyParams(
+          from: 'USD',
+          to: 'USD',
+          amount: 100,
+        );
 
-          // Act
-          final result = await useCase(params);
+        // Act
+        final apiResult = await useCase(params);
 
-          // Assert
-          expect(mockRepository.calls, isEmpty);
-          expect(result.fromCurrency, 'USD');
-          expect(result.toCurrency, 'USD');
-          expect(result.amount, 100);
-          expect(result.quote, 1.0);
-          expect(result.result, 100);
-        },
-      );
+        // Assert
+        expect(mockRepository.calls, isEmpty);
+        expect(apiResult.isSuccess, true);
+        apiResult.when(
+          success: (result) {
+            expect(result.fromCurrency, 'USD');
+            expect(result.toCurrency, 'USD');
+            expect(result.amount, 100);
+            expect(result.quote, 1.0);
+            expect(result.result, 100);
+          },
+          failure: (_) => fail('Should not be failure'),
+        );
+      });
 
       test('should handle same currency with decimal amount', () async {
         // Arrange
@@ -213,37 +224,18 @@ void main() {
         );
 
         // Act
-        final result = await useCase(params);
+        final apiResult = await useCase(params);
 
         // Assert
         expect(mockRepository.calls, isEmpty);
-        expect(result.amount, 123.45);
-        expect(result.result, 123.45);
-        expect(result.quote, 1.0);
-      });
-    });
-
-    group('error handling', () {
-      test('should propagate repository exceptions', () async {
-        // Arrange
-        mockRepository.exception = Exception('Network error');
-
-        const params = ConvertCurrencyParams(
-          from: 'USD',
-          to: 'EUR',
-          amount: 100,
-        );
-
-        // Act & Assert
-        expect(
-          () => useCase(params),
-          throwsA(
-            isA<Exception>().having(
-              (e) => e.toString(),
-              'message',
-              contains('Network error'),
-            ),
-          ),
+        expect(apiResult.isSuccess, true);
+        apiResult.when(
+          success: (result) {
+            expect(result.amount, 123.45);
+            expect(result.result, 123.45);
+            expect(result.quote, 1.0);
+          },
+          failure: (_) => fail('Should not be failure'),
         );
       });
     });

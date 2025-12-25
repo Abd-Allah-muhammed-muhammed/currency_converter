@@ -1,24 +1,24 @@
-
+/// Model representing API error information.
 class ApiErrorModel {
-  final String? message;
-  final int? code;
+  /// Creates an API error model.
+  const ApiErrorModel({required this.message, this.code});
 
-  ApiErrorModel({
-    required this.message,
-    this.code,
-  });
-
+  /// Factory to create from JSON response.
   factory ApiErrorModel.fromJson(Map<String, dynamic> json) {
     return ApiErrorModel(
-      message: json['message'],
-      code: json['code'],
+      message: json['message'] as String?,
+      code: json['code'] as int?,
     );
   }
 
+  /// The error message.
+  final String? message;
+
+  /// The error code.
+  final int? code;
+
+  /// Converts to JSON.
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['message'] = message;
-    data['code'] = code;
-    return data;
+    return <String, dynamic>{'message': message, 'code': code};
   }
 }

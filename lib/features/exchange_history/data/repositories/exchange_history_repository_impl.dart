@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/exchange_history/data/datasources/exchange_history_remote_data_source.dart';
@@ -10,6 +11,7 @@ import 'package:intl/intl.dart';
 /// Implementation of [ExchangeHistoryRepository].
 ///
 /// This class fetches exchange rate history from the remote data source.
+@LazySingleton(as: ExchangeHistoryRepository)
 class ExchangeHistoryRepositoryImpl implements ExchangeHistoryRepository {
   ExchangeHistoryRepositoryImpl({required this.remoteDataSource});
 

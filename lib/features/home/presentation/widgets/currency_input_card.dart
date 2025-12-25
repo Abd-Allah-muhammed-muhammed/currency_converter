@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import '../../../../core/utils/colors.dart';
@@ -41,20 +42,31 @@ class CurrencySelector extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.grey.shade200,
-                image: flagUrl != null
-                    ? DecorationImage(
-                        image: NetworkImage(flagUrl!),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
               ),
-              child: flagUrl == null
-                  ? Icon(
+              child: flagUrl != null
+                  ? ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: flagUrl!,
+                        fit: BoxFit.cover,
+                        width: 28,
+                        height: 28,
+                        placeholder: (context, url) => Icon(
+                          Icons.flag_rounded,
+                          size: 16,
+                          color: Colors.grey.shade400,
+                        ),
+                        errorWidget: (context, url, error) => Icon(
+                          Icons.flag_rounded,
+                          size: 16,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    )
+                  : Icon(
                       Icons.flag_rounded,
                       size: 16,
                       color: Colors.grey.shade400,
-                    )
-                  : null,
+                    ),
             ),
             SizedBox(width: 2.w),
             Text(

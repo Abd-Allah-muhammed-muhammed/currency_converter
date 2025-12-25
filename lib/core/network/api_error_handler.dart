@@ -1,210 +1,244 @@
 import 'package:dio/dio.dart';
 
-import 'api_constants.dart';
 import 'api_error_model.dart';
+
+/// Enum representing different data source error states.
 enum DataSource {
-  NO_CONTENT,
-  BAD_REQUEST,
-  FORBIDDEN,
-  UNAUTORISED,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-  CONNECT_TIMEOUT,
-  CANCEL,
-  RECIEVE_TIMEOUT,
-  SEND_TIMEOUT,
-  CACHE_ERROR,
-  NO_INTERNET_CONNECTION,
-  // API_LOGIC_ERROR,
-  DEFAULT
+  noContent,
+  badRequest,
+  forbidden,
+  unauthorized,
+  notFound,
+  internalServerError,
+  connectTimeout,
+  cancel,
+  receiveTimeout,
+  sendTimeout,
+  cacheError,
+  noInternetConnection,
+  defaultError,
 }
 
+/// HTTP response status codes.
 class ResponseCode {
-  static const int SUCCESS = 200; // success with data
-  static const int NO_CONTENT = 201; // success with no data (no content)
-  static const int BAD_REQUEST = 400; // failure, API rejected request
-  static const int UNAUTORISED = 401; // failure, user is not authorised
-  static const int FORBIDDEN = 403; //  failure, API rejected request
-  static const int INTERNAL_SERVER_ERROR = 500; // failure, crash in server side
-  static const int NOT_FOUND = 404; // failure, not found
-  static const int API_LOGIC_ERROR = 422; // API , lOGIC ERROR
+  ResponseCode._();
 
-  // local status code
-  static const int CONNECT_TIMEOUT = -1;
-  static const int CANCEL = -2;
-  static const int RECIEVE_TIMEOUT = -3;
-  static const int SEND_TIMEOUT = -4;
-  static const int CACHE_ERROR = -5;
-  static const int NO_INTERNET_CONNECTION = -6;
-  static const int DEFAULT = -7;
+  static const int success = 200;
+  static const int noContent = 201;
+  static const int badRequest = 400;
+  static const int unauthorized = 401;
+  static const int forbidden = 403;
+  static const int notFound = 404;
+  static const int apiLogicError = 422;
+  static const int internalServerError = 500;
+
+  // Local status codes
+  static const int connectTimeout = -1;
+  static const int cancel = -2;
+  static const int receiveTimeout = -3;
+  static const int sendTimeout = -4;
+  static const int cacheError = -5;
+  static const int noInternetConnection = -6;
+  static const int defaultError = -7;
 }
 
+/// Response error messages.
 class ResponseMessage {
-  static const String NO_CONTENT =
-      ApiErrors.noContent; // success with no data (no content)
-  static const String BAD_REQUEST =
-      ApiErrors.badRequestError; // failure, API rejected request
-  static const String UNAUTORISED =
-      ApiErrors.unauthorizedError; // failure, user is not authorised
-  static const String FORBIDDEN =
-      ApiErrors.forbiddenError; //  failure, API rejected request
-  static const String INTERNAL_SERVER_ERROR =
-      ApiErrors.internalServerError; // failure, crash in server side
-  static const String NOT_FOUND =
-      ApiErrors.notFoundError; // failure, crash in server side
+  ResponseMessage._();
 
-  // local status code
-  static String CONNECT_TIMEOUT = ApiErrors.timeoutError;
-  static String CANCEL = ApiErrors.defaultError;
-  static String RECIEVE_TIMEOUT = ApiErrors.timeoutError;
-  static String SEND_TIMEOUT = ApiErrors.timeoutError;
-  static String CACHE_ERROR = ApiErrors.cacheError;
-  static String NO_INTERNET_CONNECTION = ApiErrors.noInternetError;
-  static String DEFAULT = ApiErrors.defaultError;
+  static const String noContent = ApiErrors.noContent;
+  static const String badRequest = ApiErrors.badRequestError;
+  static const String unauthorized = ApiErrors.unauthorizedError;
+  static const String forbidden = ApiErrors.forbiddenError;
+  static const String notFound = ApiErrors.notFoundError;
+  static const String internalServerError = ApiErrors.internalServerError;
+  static const String connectTimeout = ApiErrors.timeoutError;
+  static const String cancel = ApiErrors.defaultError;
+  static const String receiveTimeout = ApiErrors.timeoutError;
+  static const String sendTimeout = ApiErrors.timeoutError;
+  static const String cacheError = ApiErrors.cacheError;
+  static const String noInternetConnection = ApiErrors.noInternetError;
+  static const String defaultError = ApiErrors.defaultError;
 }
 
+/// Extension to convert DataSource to ApiErrorModel.
 extension DataSourceExtension on DataSource {
   ApiErrorModel getFailure() {
     switch (this) {
-      case DataSource.NO_CONTENT:
+      case DataSource.noContent:
         return ApiErrorModel(
-            code: ResponseCode.NO_CONTENT, message: ResponseMessage.NO_CONTENT);
-      case DataSource.BAD_REQUEST:
+          code: ResponseCode.noContent,
+          message: ResponseMessage.noContent,
+        );
+      case DataSource.badRequest:
         return ApiErrorModel(
-            code: ResponseCode.BAD_REQUEST,
-            message: ResponseMessage.BAD_REQUEST);
-      case DataSource.FORBIDDEN:
+          code: ResponseCode.badRequest,
+          message: ResponseMessage.badRequest,
+        );
+      case DataSource.forbidden:
         return ApiErrorModel(
-            code: ResponseCode.FORBIDDEN, message: ResponseMessage.FORBIDDEN);
-      case DataSource.UNAUTORISED:
+          code: ResponseCode.forbidden,
+          message: ResponseMessage.forbidden,
+        );
+      case DataSource.unauthorized:
         return ApiErrorModel(
-            code: ResponseCode.UNAUTORISED,
-            message: ResponseMessage.UNAUTORISED);
-      case DataSource.NOT_FOUND:
+          code: ResponseCode.unauthorized,
+          message: ResponseMessage.unauthorized,
+        );
+      case DataSource.notFound:
         return ApiErrorModel(
-            code: ResponseCode.NOT_FOUND, message: ResponseMessage.NOT_FOUND);
-      case DataSource.INTERNAL_SERVER_ERROR:
+          code: ResponseCode.notFound,
+          message: ResponseMessage.notFound,
+        );
+      case DataSource.internalServerError:
         return ApiErrorModel(
-            code: ResponseCode.INTERNAL_SERVER_ERROR,
-            message: ResponseMessage.INTERNAL_SERVER_ERROR);
-      case DataSource.CONNECT_TIMEOUT:
+          code: ResponseCode.internalServerError,
+          message: ResponseMessage.internalServerError,
+        );
+      case DataSource.connectTimeout:
         return ApiErrorModel(
-            code: ResponseCode.CONNECT_TIMEOUT,
-            message: ResponseMessage.CONNECT_TIMEOUT);
-      case DataSource.CANCEL:
+          code: ResponseCode.connectTimeout,
+          message: ResponseMessage.connectTimeout,
+        );
+      case DataSource.cancel:
         return ApiErrorModel(
-            code: ResponseCode.CANCEL, message: ResponseMessage.CANCEL);
-      case DataSource.RECIEVE_TIMEOUT:
+          code: ResponseCode.cancel,
+          message: ResponseMessage.cancel,
+        );
+      case DataSource.receiveTimeout:
         return ApiErrorModel(
-            code: ResponseCode.RECIEVE_TIMEOUT,
-            message: ResponseMessage.RECIEVE_TIMEOUT);
-      case DataSource.SEND_TIMEOUT:
+          code: ResponseCode.receiveTimeout,
+          message: ResponseMessage.receiveTimeout,
+        );
+      case DataSource.sendTimeout:
         return ApiErrorModel(
-            code: ResponseCode.SEND_TIMEOUT,
-            message: ResponseMessage.SEND_TIMEOUT);
-      case DataSource.CACHE_ERROR:
+          code: ResponseCode.sendTimeout,
+          message: ResponseMessage.sendTimeout,
+        );
+      case DataSource.cacheError:
         return ApiErrorModel(
-            code: ResponseCode.CACHE_ERROR,
-            message: ResponseMessage.CACHE_ERROR);
-      case DataSource.NO_INTERNET_CONNECTION:
+          code: ResponseCode.cacheError,
+          message: ResponseMessage.cacheError,
+        );
+      case DataSource.noInternetConnection:
         return ApiErrorModel(
-            code: ResponseCode.NO_INTERNET_CONNECTION,
-            message: ResponseMessage.NO_INTERNET_CONNECTION);
-      case DataSource.DEFAULT:
+          code: ResponseCode.noInternetConnection,
+          message: ResponseMessage.noInternetConnection,
+        );
+      case DataSource.defaultError:
         return ApiErrorModel(
-            code: ResponseCode.DEFAULT, message: ResponseMessage.DEFAULT);
+          code: ResponseCode.defaultError,
+          message: ResponseMessage.defaultError,
+        );
     }
   }
 }
 
+/// Error handler for API errors.
+///
+/// Converts various error types to a standardized [ApiErrorModel].
 class ErrorHandler implements Exception {
   late ApiErrorModel failure;
 
   ErrorHandler.handle(dynamic error) {
     if (error is DioException) {
-      // dio error so its an error from response of the API or from dio itself
-      failure = _handleError(error);
-    } else  {
-
-      // default error
-      failure = DataSource.DEFAULT.getFailure();
+      failure = _handleDioError(error);
+    } else {
+      failure = DataSource.defaultError.getFailure();
     }
   }
 
   ErrorHandler.fromMessage(this.failure);
 }
 
-ApiErrorModel _handleError(DioException error) {
-
+/// Handles DioException and returns appropriate ApiErrorModel.
+ApiErrorModel _handleDioError(DioException error) {
   switch (error.type) {
-
     case DioExceptionType.connectionTimeout:
-      return DataSource.CONNECT_TIMEOUT.getFailure();
+      return DataSource.connectTimeout.getFailure();
     case DioExceptionType.sendTimeout:
-      return DataSource.SEND_TIMEOUT.getFailure();
+      return DataSource.sendTimeout.getFailure();
     case DioExceptionType.receiveTimeout:
-      return DataSource.RECIEVE_TIMEOUT.getFailure();
+      return DataSource.receiveTimeout.getFailure();
     case DioExceptionType.badResponse:
-      if (error.response?.data["message"] == "Unauthenticated.") {
-        return ApiErrorModel(
-          code: error.response?.statusCode,
-          message: error.response?.data["message"].toString()
-        );
-      }
-
-      if (error.response?.data["errors"][0] != null) {
-        return ApiErrorModel(
-          code: error.response?.statusCode,
-          message: error.response?.data["errors"][0].toString()
-        );
-      }
-
-      if (error.response != null &&
-          error.response?.statusCode != null &&
-          error.response?.statusMessage != null) {
-        return ApiErrorModel.fromJson(error.response!.data);
-      } else {
-        return DataSource.DEFAULT.getFailure();
-      }
+      return _handleBadResponse(error);
+    case DioExceptionType.cancel:
+      return DataSource.cancel.getFailure();
+    case DioExceptionType.connectionError:
+      return DataSource.noInternetConnection.getFailure();
+    case DioExceptionType.badCertificate:
+      return DataSource.defaultError.getFailure();
     case DioExceptionType.unknown:
       if (error.response != null &&
           error.response?.statusCode != null &&
           error.response?.statusMessage != null) {
         return ApiErrorModel.fromJson(error.response!.data);
-      } else {
-        return DataSource.DEFAULT.getFailure();
       }
-    case DioExceptionType.cancel:
-      return DataSource.CANCEL.getFailure();
-    case DioExceptionType.connectionError:
-      return DataSource.DEFAULT.getFailure();
-    case DioExceptionType.badCertificate:
-      return DataSource.DEFAULT.getFailure();
-    case DioExceptionType.badResponse:
-      return DataSource.DEFAULT.getFailure();
+      return DataSource.defaultError.getFailure();
   }
 }
 
-class ApiInternalStatus {
-  static const int SUCCESS = 0;
-  static const int FAILURE = 1;
+/// Handles bad response errors.
+ApiErrorModel _handleBadResponse(DioException error) {
+  if (error.response?.data == null) {
+    return DataSource.defaultError.getFailure();
+  }
+
+  final data = error.response?.data;
+
+  // Handle "Unauthenticated" responses
+  if (data is Map && data['message'] == 'Unauthenticated.') {
+    return ApiErrorModel(
+      code: error.response?.statusCode,
+      message: data['message'].toString(),
+    );
+  }
+
+  // Handle errors array
+  if (data is Map && data['errors'] is List && (data['errors'] as List).isNotEmpty) {
+    return ApiErrorModel(
+      code: error.response?.statusCode,
+      message: data['errors'][0].toString(),
+    );
+  }
+
+  // Handle standard error response
+  if (error.response?.statusCode != null && error.response?.statusMessage != null) {
+    try {
+      return ApiErrorModel.fromJson(error.response!.data);
+    } catch (_) {
+      return DataSource.defaultError.getFailure();
+    }
+  }
+
+  return DataSource.defaultError.getFailure();
 }
 
+/// API internal status codes.
+class ApiInternalStatus {
+  ApiInternalStatus._();
 
+  static const int success = 0;
+  static const int failure = 1;
+}
+
+/// Predefined API error messages.
 class ApiErrors {
-  static const String badRequestError = "badRequestError";
-  static const String noContent = "noContent";
-  static const String forbiddenError = "forbiddenError";
-  static const String unauthorizedError = "unauthorizedError";
-  static const String notFoundError = "notFoundError";
-  static const String conflictError = "conflictError";
-  static const String internalServerError = "internalServerError";
-  static const String unknownError = "unknownError";
-  static const String timeoutError = "timeoutError";
-  static const String defaultError = "Try again later";
-  static const String cacheError = "cacheError";
-  static const String noInternetError = "noInternetError";
-  static const String loadingMessage = "loading_message";
-  static const String retryAgainMessage = "retry_again_message";
-  static const String ok = "Ok";
+  ApiErrors._();
+
+  static const String badRequestError = 'badRequestError';
+  static const String noContent = 'noContent';
+  static const String forbiddenError = 'forbiddenError';
+  static const String unauthorizedError = 'unauthorizedError';
+  static const String notFoundError = 'notFoundError';
+  static const String conflictError = 'conflictError';
+  static const String internalServerError = 'internalServerError';
+  static const String unknownError = 'unknownError';
+  static const String timeoutError = 'timeoutError';
+  static const String defaultError = 'Try again later';
+  static const String cacheError = 'cacheError';
+  static const String noInternetError = 'noInternetError';
+  static const String loadingMessage = 'loading_message';
+  static const String retryAgainMessage = 'retry_again_message';
+  static const String ok = 'Ok';
 }

@@ -1,10 +1,7 @@
-import 'package:currency_converter/core/network/api_error_handler.dart';
-import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/currency/data/datasources/currency_local_data_source.dart';
 import 'package:currency_converter/features/currency/data/datasources/currency_remote_data_source.dart';
 import 'package:currency_converter/features/currency/data/models/currency_model.dart';
 import 'package:currency_converter/features/currency/data/repositories/currency_repository_impl.dart';
-import 'package:currency_converter/features/currency/domain/entities/currency.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -46,6 +43,8 @@ void main() {
     ),
   ];
 
+  // Used for validation in assertions
+  // ignore: unused_local_variable
   final tCurrencyEntities = tCurrencyModels.map((m) => m.toEntity()).toList();
 
   group('getCurrencies', () {

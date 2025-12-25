@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:currency_converter/core/storage/preferences_repository.dart';
 import 'package:currency_converter/features/home/domain/usecases/convert_currency.dart';
 import 'package:currency_converter/features/home/presentation/cubit/convert_state.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 /// Cubit for handling currency conversion with debounce.
 ///
@@ -13,12 +14,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// - Immediate conversion for quick select and swap
 /// - Error handling for API failures
 /// - Input validation
+/// - Saving and restoring last selected currencies
+@injectable
 class ConvertCubit extends Cubit<ConvertState> {
-  ConvertCubit({required ConvertCurrency convertCurrency})
-    : _convertCurrency = convertCurrency,
-      super(const ConvertInitial());
+  ConvertCubit(
+    ConvertCurrency convertCurrency,
+    PreferencesRepository preferencesRepository,
+  )   : _convertCurrency = convertCurrency,
+        _preferencesRepository = preferencesRepository,
+        super(const ConvertInitial()) {
+    _initializeFromPreferences();
+  }
 
   final ConvertCurrency _convertCurrency;
+  final PreferencesRepository _preferencesRepository;
 
   /// Debounce timer for user input.
   Timer? _debounceTimer;
@@ -31,6 +40,28 @@ class ConvertCubit extends Cubit<ConvertState> {
   String _toCurrency = 'EUR';
   double _currentAmount = 0;
 
+  /// Initializes currencies from saved preferences.
+  void _initializeFromPreferences() {
+    final savedCurrencies = _preferencesRepository.getLastCurrencies();
+    if (savedCurrencies != null) {
+      _fromCurrency = savedCurrencies.from;
+      _toCurrency = savedCurrencies.to;
+      developer.log(
+        'Restored currencies: $_fromCurrency -> $_toCurrency',
+        name: 'ConvertCubit',
+      );
+    }
+
+    final savedAmount = _preferencesRepository.getLastAmount();
+    if (savedAmount != null) {
+      _currentAmount = savedAmount;
+      developer.log(
+        'Restored amount: $_currentAmount',
+        name: 'ConvertCubit',
+      );
+    }
+  }
+
   /// Gets the current from currency.
   String get fromCurrency => _fromCurrency;
 
@@ -40,14 +71,22 @@ class ConvertCubit extends Cubit<ConvertState> {
   /// Gets the current amount.
   double get currentAmount => _currentAmount;
 
-  /// Sets the from currency.
+  /// Sets the from currency and saves to preferences.
   void setFromCurrency(String currency) {
     _fromCurrency = currency;
+    _preferencesRepository.saveLastCurrencies(
+      from: _fromCurrency,
+      to: _toCurrency,
+    );
   }
 
-  /// Sets the to currency.
+  /// Sets the to currency and saves to preferences.
   void setToCurrency(String currency) {
     _toCurrency = currency;
+    _preferencesRepository.saveLastCurrencies(
+      from: _fromCurrency,
+      to: _toCurrency,
+    );
   }
 
   /// Converts currency with debounce.
@@ -66,6 +105,10 @@ class ConvertCubit extends Cubit<ConvertState> {
     _fromCurrency = from;
     _toCurrency = to;
     _currentAmount = amount;
+
+    // Save to preferences
+    _preferencesRepository.saveLastCurrencies(from: from, to: to);
+    _preferencesRepository.saveLastAmount(amount);
 
     // Validate input - don't call API for invalid amounts
     if (amount <= 0) {
@@ -128,70 +171,32 @@ class ConvertCubit extends Cubit<ConvertState> {
 
     emit(ConvertLoading(fromCurrency: from, toCurrency: to, amount: amount));
 
-    try {
-      final result = await _convertCurrency(
-        ConvertCurrencyParams(from: from, to: to, amount: amount),
-      );
+    final result = await _convertCurrency(
+      ConvertCurrencyParams(from: from, to: to, amount: amount),
+    );
 
-      developer.log(
-        'Conversion successful: ${result.result} $to',
-        name: 'ConvertCubit',
-      );
-
-      emit(ConvertSuccess(result: result));
-    } on DioException catch (e) {
-      developer.log(
-        'Conversion failed: ${e.message}',
-        name: 'ConvertCubit',
-        error: e,
-      );
-
-      String errorMessage = 'Failed to convert currency';
-
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        errorMessage = 'Connection timeout. Please try again.';
-      } else if (e.type == DioExceptionType.connectionError) {
-        errorMessage = 'No internet connection. Please check your network.';
-      } else if (e.message != null && e.message!.isNotEmpty) {
-        errorMessage = e.message!;
-      }
-
-      emit(
-        ConvertError(
-          message: errorMessage,
-          fromCurrency: from,
-          toCurrency: to,
-          amount: amount,
-        ),
-      );
-    } on ArgumentError catch (e) {
-      developer.log(
-        'Validation error: ${e.message}',
-        name: 'ConvertCubit',
-        error: e,
-      );
-
-      emit(
-        ConvertError(
-          message: e.message.toString(),
-          fromCurrency: from,
-          toCurrency: to,
-          amount: amount,
-        ),
-      );
-    } catch (e) {
-      developer.log('Unexpected error: $e', name: 'ConvertCubit', error: e);
-
-      emit(
-        ConvertError(
-          message: 'An unexpected error occurred',
-          fromCurrency: from,
-          toCurrency: to,
-          amount: amount,
-        ),
-      );
-    }
+    result.when(
+      success: (conversionResult) {
+        developer.log(
+          'Conversion successful: ${conversionResult.result} $to',
+          name: 'ConvertCubit',
+        );
+        emit(ConvertSuccess(result: conversionResult));
+      },
+      failure: (error) {
+        final errorMessage =
+            error.failure.message ?? 'Failed to convert currency';
+        developer.log('Conversion failed: $errorMessage', name: 'ConvertCubit');
+        emit(
+          ConvertError(
+            message: errorMessage,
+            fromCurrency: from,
+            toCurrency: to,
+            amount: amount,
+          ),
+        );
+      },
+    );
   }
 
   /// Swaps the from and to currencies and converts.

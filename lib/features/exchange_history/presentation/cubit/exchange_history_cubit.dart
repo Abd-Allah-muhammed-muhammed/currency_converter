@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/features/exchange_history/domain/usecases/get_exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/presentation/cubit/exchange_history_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// - Loading exchange history for a currency pair
 /// - Changing time periods (1W, 1M, 3M, 1Y)
 /// - Swapping currencies
+@injectable
 class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
   ExchangeHistoryCubit({required GetExchangeHistory getExchangeHistory})
     : _getExchangeHistory = getExchangeHistory,

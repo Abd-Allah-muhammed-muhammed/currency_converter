@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import '../../../../core/utils/colors.dart';
@@ -130,12 +131,11 @@ class CurrencyPairHeader extends StatelessWidget {
       ),
       child: ClipOval(
         child: flagUrl != null
-            ? Image.network(
-                flagUrl,
+            ? CachedNetworkImage(
+                imageUrl: flagUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildFlagPlaceholder();
-                },
+                placeholder: (context, url) => _buildFlagPlaceholder(),
+                errorWidget: (context, url, error) => _buildFlagPlaceholder(),
               )
             : _buildFlagPlaceholder(),
       ),

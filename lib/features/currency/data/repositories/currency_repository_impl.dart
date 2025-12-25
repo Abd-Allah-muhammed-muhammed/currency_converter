@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/currency/data/datasources/currency_local_data_source.dart';
@@ -13,6 +14,7 @@ import 'package:currency_converter/features/currency/domain/repositories/currenc
 /// 1. Check if currencies exist in local database.
 /// 2. If yes, return from local database.
 /// 3. If no, fetch from remote API, save to database, then return.
+@LazySingleton(as: CurrencyRepository)
 class CurrencyRepositoryImpl implements CurrencyRepository {
   CurrencyRepositoryImpl({
     required this.localDataSource,

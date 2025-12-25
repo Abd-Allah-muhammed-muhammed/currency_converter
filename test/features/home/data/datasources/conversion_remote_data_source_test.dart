@@ -1,6 +1,7 @@
 import 'package:currency_converter/core/network/api_service.dart';
 import 'package:currency_converter/features/home/data/datasources/conversion_remote_data_source.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -67,6 +68,14 @@ class MockApiService implements ApiService {
 }
 
 void main() {
+  // Initialize dotenv with test values before all tests
+  setUpAll(() {
+    dotenv.testLoad(fileInput: '''
+API_KEY=test_api_key_for_testing
+API_BASE_URL=https://api.exchangerate.host
+''');
+  });
+
   group('ConversionRemoteDataSourceImpl', () {
     late ConversionRemoteDataSourceImpl dataSource;
     late MockApiService mockApiService;

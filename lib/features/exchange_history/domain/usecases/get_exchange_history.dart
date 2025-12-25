@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/foundation.dart';
 ///
 /// This use case fetches historical exchange rates for a currency pair
 /// over a specified time period.
+@lazySingleton
 class GetExchangeHistory
     implements UseCase<ExchangeHistory, GetExchangeHistoryParams> {
   GetExchangeHistory(this.repository);

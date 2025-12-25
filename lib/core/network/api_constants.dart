@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// API constants for ExchangeRate.host API.
 ///
 /// Documentation: https://exchangerate.host/documentation
@@ -5,10 +7,14 @@ class ApiConstants {
   ApiConstants._();
 
   /// Base URL for ExchangeRate.host API.
-  static const String apiBaseUrl = 'https://api.exchangerate.host';
+  /// Loaded from environment variables for security.
+  static String get apiBaseUrl =>
+      dotenv.env['API_BASE_URL'] ?? 'https://api.exchangerate.host';
 
-  /// API key for ExchangeRate.host (free tier).
-  static const String apiKey = 'efa7058332c03a3c8d3598dad0bbdf17';
+  /// API key for ExchangeRate.host.
+  /// Loaded from environment variables to avoid exposing sensitive data.
+  static String get apiKey =>
+      dotenv.env['API_KEY'] ?? '';
 
   // ============ Endpoints ============
 

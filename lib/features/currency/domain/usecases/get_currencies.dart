@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
@@ -8,6 +9,7 @@ import 'package:currency_converter/features/currency/domain/repositories/currenc
 /// This use case fetches currencies following the offline-first approach:
 /// - Returns cached currencies if available.
 /// - Fetches from API and caches if not available locally.
+@lazySingleton
 class GetCurrencies implements UseCase<List<Currency>, NoParams> {
   GetCurrencies(this.repository);
 

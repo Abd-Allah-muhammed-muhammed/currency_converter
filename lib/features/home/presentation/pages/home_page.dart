@@ -26,10 +26,10 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _amountController = TextEditingController();
 
   // Currency selection
-  String _fromCurrency = 'USD';
-  String _fromCurrencyName = 'United States Dollar';
-  String _toCurrency = 'EUR';
-  String _toCurrencyName = 'Euro';
+  late String _fromCurrency;
+  String _fromCurrencyName = '';
+  late String _toCurrency;
+  String _toCurrencyName = '';
   int? _selectedQuickAmount;
 
   // Cubit instance
@@ -39,12 +39,38 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _convertCubit = sl<ConvertCubit>();
-    _amountController.text = '1';
+
+    // Restore currencies and amount from preferences via cubit
+    _fromCurrency = _convertCubit.fromCurrency;
+    _toCurrency = _convertCubit.toCurrency;
+    _fromCurrencyName = _getCurrencyName(_fromCurrency);
+    _toCurrencyName = _getCurrencyName(_toCurrency);
+
+    // Restore amount or default to 1
+    final savedAmount = _convertCubit.currentAmount;
+    _amountController.text = savedAmount > 0 ? savedAmount.toString() : '1';
 
     // Initial conversion
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _triggerConversion(immediate: true);
     });
+  }
+
+  /// Gets the currency name from the currency code.
+  String _getCurrencyName(String code) {
+    const currencyNames = {
+      'USD': 'United States Dollar',
+      'EUR': 'Euro',
+      'GBP': 'British Pound',
+      'JPY': 'Japanese Yen',
+      'EGP': 'Egyptian Pound',
+      'SAR': 'Saudi Riyal',
+      'AED': 'UAE Dirham',
+      'CAD': 'Canadian Dollar',
+      'AUD': 'Australian Dollar',
+      'CHF': 'Swiss Franc',
+    };
+    return currencyNames[code] ?? code;
   }
 
   @override
@@ -434,7 +460,7 @@ class _HomePageState extends State<HomePage> {
         if (state is ConvertSuccess) {
           timeText = state.formattedTimestamp;
         } else if (state is ConvertError) {
-          timeText = 'Error';
+          timeText = '!';
         }
 
         return Row(

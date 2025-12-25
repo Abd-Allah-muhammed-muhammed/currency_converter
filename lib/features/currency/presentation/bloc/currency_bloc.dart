@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/utils/conest.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
@@ -12,6 +13,7 @@ import 'package:currency_converter/features/currency/presentation/bloc/currency_
 ///
 /// This bloc handles loading, searching, and selecting currencies
 /// following the offline-first approach.
+@injectable
 class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   CurrencyBloc({
     required GetCurrencies getCurrencies,
