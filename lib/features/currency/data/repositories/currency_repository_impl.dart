@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:currency_converter/core/utils/retry_policy.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_error_handler.dart';
@@ -38,6 +39,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
 
         // Return from local database
         final localCurrencies = await localDataSource.getCurrencies();
+
         final entities = localCurrencies.map((m) => m.toEntity()).toList();
 
         return ApiResult.success(entities);
@@ -121,7 +123,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   Future<ApiResult<List<Currency>>> _fetchAndCacheCurrencies() async {
     try {
       // Fetch from remote
-      final remoteCurrencies = await remoteDataSource.getCurrencies();
+       final remoteCurrencies = await retry(remoteDataSource.getCurrencies);
 
       developer.log(
         'Fetched ${remoteCurrencies.length} currencies from API',

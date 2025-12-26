@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:injectable/injectable.dart';
+import 'package:stream_transform/stream_transform.dart';
 import 'package:currency_converter/core/utils/conest.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
@@ -8,6 +9,13 @@ import 'package:currency_converter/features/currency/domain/repositories/currenc
 import 'package:currency_converter/features/currency/domain/usecases/get_currencies.dart';
 import 'package:currency_converter/features/currency/presentation/bloc/currency_event.dart';
 import 'package:currency_converter/features/currency/presentation/bloc/currency_state.dart';
+
+
+const _duration = Duration(milliseconds: 300);
+
+EventTransformer<Event> debounce<Event>(Duration duration) {
+  return (events, mapper) => events.debounce(duration).switchMap(mapper);
+}
 
 /// Bloc for managing currency state.
 ///
@@ -23,7 +31,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
        super(const CurrencyInitial()) {
     on<LoadCurrencies>(_onLoadCurrencies);
     on<RefreshCurrencies>(_onRefreshCurrencies);
-    on<SearchCurrencies>(_onSearchCurrencies);
+    on<SearchCurrencies>(_onSearchCurrencies, transformer: debounce(_duration));
   }
 
   final GetCurrencies _getCurrencies;

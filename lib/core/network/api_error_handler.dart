@@ -1,6 +1,8 @@
+import 'dart:convert';
+
+import 'package:currency_converter/core/network/api_error_model.dart';
 import 'package:dio/dio.dart';
 
-import 'api_error_model.dart';
 
 /// Enum representing different data source error states.
 enum DataSource {
@@ -66,67 +68,67 @@ extension DataSourceExtension on DataSource {
   ApiErrorModel getFailure() {
     switch (this) {
       case DataSource.noContent:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.noContent,
           message: ResponseMessage.noContent,
         );
       case DataSource.badRequest:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.badRequest,
           message: ResponseMessage.badRequest,
         );
       case DataSource.forbidden:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.forbidden,
           message: ResponseMessage.forbidden,
         );
       case DataSource.unauthorized:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.unauthorized,
           message: ResponseMessage.unauthorized,
         );
       case DataSource.notFound:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.notFound,
           message: ResponseMessage.notFound,
         );
       case DataSource.internalServerError:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.internalServerError,
           message: ResponseMessage.internalServerError,
         );
       case DataSource.connectTimeout:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.connectTimeout,
           message: ResponseMessage.connectTimeout,
         );
       case DataSource.cancel:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.cancel,
           message: ResponseMessage.cancel,
         );
       case DataSource.receiveTimeout:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.receiveTimeout,
           message: ResponseMessage.receiveTimeout,
         );
       case DataSource.sendTimeout:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.sendTimeout,
           message: ResponseMessage.sendTimeout,
         );
       case DataSource.cacheError:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.cacheError,
           message: ResponseMessage.cacheError,
         );
       case DataSource.noInternetConnection:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.noInternetConnection,
           message: ResponseMessage.noInternetConnection,
         );
       case DataSource.defaultError:
-        return ApiErrorModel(
+        return const ApiErrorModel(
           code: ResponseCode.defaultError,
           message: ResponseMessage.defaultError,
         );
@@ -138,7 +140,6 @@ extension DataSourceExtension on DataSource {
 ///
 /// Converts various error types to a standardized [ApiErrorModel].
 class ErrorHandler implements Exception {
-  late ApiErrorModel failure;
 
   ErrorHandler.handle(dynamic error) {
     if (error is DioException) {
@@ -149,6 +150,7 @@ class ErrorHandler implements Exception {
   }
 
   ErrorHandler.fromMessage(this.failure);
+  late ApiErrorModel failure;
 }
 
 /// Handles DioException and returns appropriate ApiErrorModel.
@@ -169,10 +171,19 @@ ApiErrorModel _handleDioError(DioException error) {
     case DioExceptionType.badCertificate:
       return DataSource.defaultError.getFailure();
     case DioExceptionType.unknown:
-      if (error.response != null &&
-          error.response?.statusCode != null &&
+      if (error.response?.statusCode != null &&
           error.response?.statusMessage != null) {
-        return ApiErrorModel.fromJson(error.response!.data);
+        final respData = error.response!.data;
+
+          if (respData is Map<String, dynamic>) {
+            return ApiErrorModel.fromJson(respData);
+          } else if (respData is String) {
+            final decoded = json.decode(respData);
+            if (decoded is Map<String, dynamic>) {
+              return ApiErrorModel.fromJson(decoded);
+            }
+          }
+        return DataSource.defaultError.getFailure();
       }
       return DataSource.defaultError.getFailure();
   }
@@ -195,20 +206,33 @@ ApiErrorModel _handleBadResponse(DioException error) {
   }
 
   // Handle errors array
-  if (data is Map && data['errors'] is List && (data['errors'] as List).isNotEmpty) {
-    return ApiErrorModel(
-      code: error.response?.statusCode,
-      message: data['errors'][0].toString(),
-    );
+  if (data is Map &&
+      data['errors'] is List &&
+      (data['errors'] as List).isNotEmpty) {
+ final errors = data['errors'] as List<dynamic>;
+ final firstError = errors.isNotEmpty ? errors.first : null;
+ return ApiErrorModel(
+   code: error.response?.statusCode,
+   message: firstError?.toString() ??
+       DataSource.defaultError.getFailure().message,
+ );
   }
 
   // Handle standard error response
-  if (error.response?.statusCode != null && error.response?.statusMessage != null) {
-    try {
-      return ApiErrorModel.fromJson(error.response!.data);
-    } catch (_) {
-      return DataSource.defaultError.getFailure();
-    }
+  if (error.response?.statusCode != null &&
+      error.response?.statusMessage != null) {
+    final respData = error.response!.data;
+
+      if (respData is Map<String, dynamic>) {
+        return ApiErrorModel.fromJson(respData);
+      } else if (respData is String) {
+        final decoded = json.decode(respData);
+        if (decoded is Map<String, dynamic>) {
+          return ApiErrorModel.fromJson(decoded);
+        }
+      }
+
+    return DataSource.defaultError.getFailure();
   }
 
   return DataSource.defaultError.getFailure();

@@ -216,6 +216,49 @@ test/
 - ✅ Use Cases
 - ✅ Bloc/Cubit State Management
 
+### Integration Tests
+
+End-to-End (E2E) tests verify the app works as a whole on real devices.
+
+#### Select Currency Feature Tests
+```bash
+flutter test integration_test/select_currency_test.dart
+```
+
+**Test Coverage for Select Currency Feature:**
+| Test Case | Description |
+|-----------|-------------|
+| Page Display | Verifies the currency picker page displays with correct title |
+| Loading State | Shows loading indicator while fetching currencies |
+| Currency List Display | Displays list of currencies after loading |
+| Popular Currencies Section | Shows the "POPULAR" section header |
+| Search Field | Displays the search text field |
+| Search by Name | Filters currencies when searching by currency name |
+| Search by Code | Filters currencies when searching by code (e.g., "EUR") |
+| Empty Search Results | Shows "No currencies found" for invalid searches |
+| Selected Currency Highlight | Highlights the currently selected currency |
+| Currency Selection Callback | Calls callback when a currency is tapped |
+| Back Navigation | Navigates back when the back button is pressed |
+| Error State | Displays error message when loading fails |
+| Retry Functionality | Retry button reloads currencies after error |
+| Refresh Button | Shows refresh button when data is from cache |
+| Refresh Action | Refreshes currencies from API when refresh is pressed |
+| All Currencies Section | Displays "ALL CURRENCIES" section |
+| Clear Search | Clears search and shows all currencies again |
+| Rapid Search Input | Handles rapid typing with debounce correctly |
+
+#### Running on a Device
+```bash
+flutter test integration_test/select_currency_test.dart -d <device-id>
+```
+
+### Static Analysis
+
+Code quality is enforced using `very_good_analysis`:
+- **Strict Linting**: 200+ rules enabled
+- **CI Enforcement**: Fails build on any warning
+- **Command**: `flutter analyze`
+
 ## 🛠️ Technology Stack
 
 ### Core Framework
@@ -370,6 +413,14 @@ https://flagcdn.com/w40/{country_code}.png
 - Supports ISO country codes
 - Automatic caching via `cached_network_image`
 
+### Reliability
+
+#### Retry Strategy
+Network requests are protected by a robust retry mechanism to handle unstable connections:
+- **Exponential Backoff**: Delays increase between retries (2s → 4s → 8s)
+- **Max Retries**: 3 attempts before failing
+- **Implementation**: Located in `lib/core/utils/retry_policy.dart`
+
 ## 🎨 UI/UX Design
 
 ### Material Design 3
@@ -506,6 +557,7 @@ flutter pub outdated
 
 ## 📈 Performance Optimizations
 
+- ✅ **Isolate Search** (Heavy search/filter operations run in background isolate)
 - ✅ **Debounced API calls** (1 second delay on typing)
 - ✅ **Image caching** (cached_network_image)
 - ✅ **Database indexing** (SQLite primary keys)

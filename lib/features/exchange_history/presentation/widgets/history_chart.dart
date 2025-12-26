@@ -15,13 +15,13 @@ class HistoryChartData {
 class HistoryChart extends StatelessWidget {
   const HistoryChart({
     super.key,
-    this.data,
+     required this.data,
     this.height = 280,
     this.showDayLabels = true,
   });
 
   /// The exchange rate history data points.
-  final List<HistoryChartData>? data;
+  final List<HistoryChartData> data;
 
   /// The height of the chart.
   final double height;
@@ -29,21 +29,10 @@ class HistoryChart extends StatelessWidget {
   /// Whether to show day labels on X axis.
   final bool showDayLabels;
 
-  /// Returns mock data for UI demonstration.
-  List<HistoryChartData> get _mockData => [
-        HistoryChartData(date: DateTime(2025, 12, 18), rate: 0.9150),
-        HistoryChartData(date: DateTime(2025, 12, 19), rate: 0.9280),
-        HistoryChartData(date: DateTime(2025, 12, 20), rate: 0.9200),
-        HistoryChartData(date: DateTime(2025, 12, 21), rate: 0.9105),
-        HistoryChartData(date: DateTime(2025, 12, 22), rate: 0.9180),
-        HistoryChartData(date: DateTime(2025, 12, 23), rate: 0.9310),
-        HistoryChartData(date: DateTime(2025, 12, 24), rate: 0.9245),
-      ];
 
   @override
   Widget build(BuildContext context) {
-    final chartData = data ?? _mockData;
-    
+    final chartData = data ;
     // Calculate min and max for better visualization
     final rates = chartData.map((e) => e.rate).toList();
     final minRate = rates.reduce((a, b) => a < b ? a : b);
@@ -65,7 +54,7 @@ class HistoryChart extends StatelessWidget {
             color: AppColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
-          dateFormat: _getDayFormat(),
+
           intervalType: DateTimeIntervalType.days,
           interval: 1,
           majorTickLines: const MajorTickLines(width: 0),

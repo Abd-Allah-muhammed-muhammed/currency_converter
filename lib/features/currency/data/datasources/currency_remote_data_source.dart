@@ -55,15 +55,13 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
         } else {
           throw DioException(
             requestOptions: response.response.requestOptions,
-            response: response.data,
             message: 'API returned unsuccessful response',
           );
         }
       } else {
         throw DioException(
           requestOptions: response.response.requestOptions,
-          response: response.data,
-          message: 'Failed to fetch currencies: ${response.response.statusCode}',
+          message: 'Failed to fetch currencies: ${response.response.statusCode}'
         );
       }
     } on DioException {
