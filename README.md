@@ -120,7 +120,7 @@ Before you begin, ensure you have the following installed:
    # API Configuration
    BASE_URL=https://api.exchangerate.host
    
-   # Optional: Add your API key if using a paid tier
+   # required: Add your API key it is free 
    # API_KEY=your_api_key_here
    ```
 
@@ -285,7 +285,7 @@ test/
 - ✅ Well-documented API
 - ✅ No rate limits for small projects
 - ✅ Supports live, historical, and conversion endpoints
-- ✅ No API key required for basic usage
+- ✅ API key required for 100 Requests
 
 ### API Endpoints Used
 
@@ -450,7 +450,7 @@ Create a `.env` file in the project root:
 # API Configuration
 BASE_URL=https://api.exchangerate.host
 
-# Optional: API Key (if using paid tier)
+# required: Add your API key it is free 
 # API_KEY=your_api_key_here
 
 # Optional: Enable debug logging
@@ -572,8 +572,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Your Name**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/your-profile)
+- GitHub: [@Abd-Allah-muhammed-muhammed](https://github.com/Abd-Allah-muhammed-muhammed)
+- LinkedIn: [abdallah-muhammed](https://www.linkedin.com/in/abdallah-muhammed-16a16b123/)
 
 ## 🙏 Acknowledgments
 
