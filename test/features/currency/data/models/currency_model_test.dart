@@ -112,7 +112,6 @@ void main() {
         const model = CurrencyModel(
           code: 'BTC',
           name: 'Bitcoin',
-          flagUrl: null,
         );
 
         // Act
@@ -174,7 +173,10 @@ void main() {
         final result = model.toString();
 
         // Assert
-        expect(result, equals('CurrencyModel(code: AUD, name: Australian Dollar)'));
+        expect(
+          result,
+          equals('CurrencyModel(code: AUD, name: Australian Dollar)'),
+        );
       });
     });
   });

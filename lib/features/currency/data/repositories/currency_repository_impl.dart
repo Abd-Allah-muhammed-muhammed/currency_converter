@@ -1,13 +1,14 @@
 import 'dart:developer' as developer;
-import 'package:currency_converter/core/utils/retry_policy.dart';
-import 'package:dio/dio.dart';
-import 'package:injectable/injectable.dart';
-import 'package:currency_converter/core/network/api_error_handler.dart';
+
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/utils/retry_policy.dart';
 import 'package:currency_converter/features/currency/data/datasources/currency_local_data_source.dart';
 import 'package:currency_converter/features/currency/data/datasources/currency_remote_data_source.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
 import 'package:currency_converter/features/currency/domain/repositories/currency_repository.dart';
+import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 
 /// Implementation of [CurrencyRepository].
 ///
@@ -59,7 +60,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
         error: e,
       );
       return ApiResult.failure(ErrorHandler.handle(e));
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       developer.log(
         'Unexpected error in getCurrencies: $e',
         name: 'CurrencyRepository',
@@ -75,7 +76,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
     try {
       final model = await localDataSource.getCurrencyByCode(code);
       return model?.toEntity();
-    } catch (e) {
+    } on Object catch (e) {
       developer.log(
         'Error getting currency by code: $e',
         name: 'CurrencyRepository',
@@ -88,7 +89,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   Future<bool> hasCachedCurrencies() async {
     try {
       return await localDataSource.hasCurrencies();
-    } catch (e) {
+    } on Object {
       return false;
     }
   }
@@ -108,7 +109,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       return await _fetchAndCacheCurrencies();
     } on DioException catch (e) {
       return ApiResult.failure(ErrorHandler.handle(e));
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       developer.log(
         'Error refreshing currencies: $e',
         name: 'CurrencyRepository',
@@ -123,7 +124,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   Future<ApiResult<List<Currency>>> _fetchAndCacheCurrencies() async {
     try {
       // Fetch from remote
-       final remoteCurrencies = await retry(remoteDataSource.getCurrencies);
+      final remoteCurrencies = await retry(remoteDataSource.getCurrencies);
 
       developer.log(
         'Fetched ${remoteCurrencies.length} currencies from API',
@@ -143,7 +144,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       return ApiResult.success(entities);
     } on DioException catch (e) {
       return ApiResult.failure(ErrorHandler.handle(e));
-    } catch (e) {
+    } on Object catch (e) {
       return ApiResult.failure(ErrorHandler.handle(e));
     }
   }

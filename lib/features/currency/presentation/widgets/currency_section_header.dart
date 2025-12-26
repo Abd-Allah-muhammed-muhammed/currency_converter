@@ -1,12 +1,12 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A section header widget for currency list sections.
 class CurrencySectionHeader extends StatelessWidget {
   const CurrencySectionHeader({
-    super.key,
     required this.title,
+    super.key,
   });
 
   /// The section title.

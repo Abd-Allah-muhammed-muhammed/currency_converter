@@ -11,13 +11,8 @@ class MockExchangeHistoryRemoteDataSource
 
   ExchangeHistoryModel? result;
   Exception? exception;
-  final List<
-      ({
-        String source,
-        String target,
-        String startDate,
-        String endDate,
-      })> calls = [];
+  final List<({String source, String target, String startDate, String endDate})>
+  calls = [];
 
   @override
   Future<ExchangeHistoryModel> getExchangeHistory({
@@ -83,48 +78,50 @@ void main() {
         expect(mockRemoteDataSource.calls.first.endDate, '2025-12-25');
       });
 
-      test('should return success with ExchangeHistory on successful response',
-          () async {
-        // Arrange
-        mockRemoteDataSource.result = ExchangeHistoryModel.fromJson({
-          'success': true,
-          'timeframe': true,
-          'start_date': '2025-12-19',
-          'end_date': '2025-12-21',
-          'source': 'USD',
-          'quotes': {
-            '2025-12-19': {'USDEUR': 0.738541},
-            '2025-12-20': {'USDEUR': 0.740000},
-            '2025-12-21': {'USDEUR': 0.750000},
-          },
-        });
+      test(
+        'should return success with ExchangeHistory on successful response',
+        () async {
+          // Arrange
+          mockRemoteDataSource.result = ExchangeHistoryModel.fromJson(const {
+            'success': true,
+            'timeframe': true,
+            'start_date': '2025-12-19',
+            'end_date': '2025-12-21',
+            'source': 'USD',
+            'quotes': {
+              '2025-12-19': {'USDEUR': 0.738541},
+              '2025-12-20': {'USDEUR': 0.740000},
+              '2025-12-21': {'USDEUR': 0.750000},
+            },
+          });
 
-        // Act
-        final result = await repository.getExchangeHistory(
-          sourceCurrency: 'USD',
-          targetCurrency: 'EUR',
-          startDate: DateTime(2025, 12, 19),
-          endDate: DateTime(2025, 12, 21),
-        );
+          // Act
+          final result = await repository.getExchangeHistory(
+            sourceCurrency: 'USD',
+            targetCurrency: 'EUR',
+            startDate: DateTime(2025, 12, 19),
+            endDate: DateTime(2025, 12, 21),
+          );
 
-        // Assert
-        expect(result.isSuccess, true);
-        result.when(
-          success: (history) {
-            expect(history.sourceCurrency, 'USD');
-            expect(history.targetCurrency, 'EUR');
-            expect(history.rates.length, 3);
-            expect(history.rates[0].rate, 0.738541);
-            expect(history.rates[1].rate, 0.740000);
-            expect(history.rates[2].rate, 0.750000);
-          },
-          failure: (_) => fail('Expected success'),
-        );
-      });
+          // Assert
+          expect(result.isSuccess, true);
+          result.when(
+            success: (history) {
+              expect(history.sourceCurrency, 'USD');
+              expect(history.targetCurrency, 'EUR');
+              expect(history.rates.length, 3);
+              expect(history.rates[0].rate, 0.738541);
+              expect(history.rates[1].rate, 0.740000);
+              expect(history.rates[2].rate, 0.750000);
+            },
+            failure: (_) => fail('Expected success'),
+          );
+        },
+      );
 
       test('should return rates sorted by date', () async {
         // Arrange - dates are not in order in the response
-        mockRemoteDataSource.result = ExchangeHistoryModel.fromJson({
+        mockRemoteDataSource.result = ExchangeHistoryModel.fromJson(const {
           'success': true,
           'timeframe': true,
           'start_date': '2025-12-19',
@@ -194,7 +191,7 @@ void main() {
 
       test('should handle empty quotes', () async {
         // Arrange
-        mockRemoteDataSource.result = ExchangeHistoryModel.fromJson({
+        mockRemoteDataSource.result = ExchangeHistoryModel.fromJson(const {
           'success': true,
           'timeframe': true,
           'start_date': '2025-12-19',

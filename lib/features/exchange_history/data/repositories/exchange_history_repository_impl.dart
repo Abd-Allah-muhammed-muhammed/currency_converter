@@ -1,11 +1,11 @@
 import 'dart:developer' as developer;
 
-import 'package:injectable/injectable.dart';
-import 'package:currency_converter/core/network/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/exchange_history/data/datasources/exchange_history_remote_data_source.dart';
 import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/domain/repositories/exchange_history_repository.dart';
+import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
 /// Implementation of [ExchangeHistoryRepository].
@@ -61,7 +61,7 @@ class ExchangeHistoryRepositoryImpl implements ExchangeHistoryRepository {
       );
 
       return ApiResult.success(entity);
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       developer.log(
         'Error getting exchange history: $e',
         name: 'ExchangeHistoryRepository',

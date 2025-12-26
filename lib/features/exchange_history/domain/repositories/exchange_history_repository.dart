@@ -4,6 +4,7 @@ import 'package:currency_converter/features/exchange_history/domain/entities/exc
 /// Repository interface for exchange history operations.
 ///
 /// This defines the contract that the data layer must implement.
+// ignore: one_member_abstracts
 abstract class ExchangeHistoryRepository {
   /// Gets historical exchange rates for a time period.
   ///

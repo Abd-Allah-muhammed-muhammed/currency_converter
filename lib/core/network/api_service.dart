@@ -39,5 +39,3 @@ abstract class ApiService {
     @Query('currencies') String currencies,
   );
 }
-
-

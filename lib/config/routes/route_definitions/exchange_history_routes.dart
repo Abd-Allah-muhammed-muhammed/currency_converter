@@ -5,17 +5,16 @@ import 'package:go_router/go_router.dart';
 
 /// Arguments for exchange history page navigation.
 class ExchangeHistoryArgs {
-  final String fromCurrency;
-  final String toCurrency;
-  final String fromCurrencyName;
-  final String toCurrencyName;
-
   const ExchangeHistoryArgs({
     required this.fromCurrency,
     required this.toCurrency,
     required this.fromCurrencyName,
     required this.toCurrencyName,
   });
+  final String fromCurrency;
+  final String toCurrency;
+  final String fromCurrencyName;
+  final String toCurrencyName;
 }
 
 final List<GoRoute> exchangeHistoryRoutes = [
@@ -33,13 +32,16 @@ final List<GoRoute> exchangeHistoryRoutes = [
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            )),
+            position:
+                Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                ),
             child: child,
           );
         },

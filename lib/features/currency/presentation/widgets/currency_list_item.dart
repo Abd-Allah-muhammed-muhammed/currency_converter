@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:currency_converter/core/utils/colors.dart';
+import 'package:currency_converter/core/utils/widgets/cached_flag_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A list item widget for displaying a currency option.
 class CurrencyListItem extends StatelessWidget {
   const CurrencyListItem({
-    super.key,
     required this.currencyCode,
     required this.currencyName,
+    super.key,
     this.flagUrl,
     this.isSelected = false,
     this.onTap,
@@ -84,7 +85,7 @@ class CurrencyListItem extends StatelessWidget {
               Container(
                 width: 28,
                 height: 28,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.cyan,
                   shape: BoxShape.circle,
                 ),
@@ -117,26 +118,12 @@ class CurrencyListItem extends StatelessWidget {
       ),
       child: ClipOval(
         child: flagUrl != null
-            ? CachedNetworkImage(
-                imageUrl: flagUrl!,
-                fit: BoxFit.cover,
-                width: 48,
+            ? CachedFlagImage(
+                flagUrl: flagUrl!,
+                 width: 48,
                 height: 48,
-                placeholder: (context, url) => _buildFlagPlaceholder(),
-                errorWidget: (context, url, error) => _buildFlagPlaceholder(),
               )
-            : _buildFlagPlaceholder(),
-      ),
-    );
-  }
-
-  Widget _buildFlagPlaceholder() {
-    return Container(
-      color: Colors.grey.shade200,
-      child: Icon(
-        Icons.flag_rounded,
-        size: 24,
-        color: Colors.grey.shade400,
+            : const SizedBox.shrink(),
       ),
     );
   }

@@ -27,7 +27,7 @@ class MockConversionRepository implements ConversionRepository {
             amount: amount,
             quote: 0.92,
             result: amount * 0.92,
-            timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+            timestamp: DateTime.utc(2025, 12, 25, 12),
           ),
         );
   }
@@ -69,8 +69,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
         mockRepository.result = ApiResult.success(expectedResult);
 
@@ -139,81 +139,101 @@ void main() {
         expect(mockRepository.calls, isEmpty);
       });
 
-      test('should return ApiResult.failure when from currency is empty', () async {
-        // Arrange
-        const params = ConvertCurrencyParams(from: '', to: 'EUR', amount: 100);
+      test(
+        'should return ApiResult.failure when from currency is empty',
+        () async {
+          // Arrange
+          const params = ConvertCurrencyParams(
+            from: '',
+            to: 'EUR',
+            amount: 100,
+          );
 
-        // Act
-        final result = await useCase(params);
+          // Act
+          final result = await useCase(params);
 
-        // Assert
-        expect(result.isSuccess, false);
-        result.when(
-          success: (_) => fail('Should not be success'),
-          failure: (error) {
-            expect(error.failure.message, 'Currency codes cannot be empty');
-          },
-        );
-        expect(mockRepository.calls, isEmpty);
-      });
+          // Assert
+          expect(result.isSuccess, false);
+          result.when(
+            success: (_) => fail('Should not be success'),
+            failure: (error) {
+              expect(error.failure.message, 'Currency codes cannot be empty');
+            },
+          );
+          expect(mockRepository.calls, isEmpty);
+        },
+      );
 
-      test('should return ApiResult.failure when to currency is empty', () async {
-        // Arrange
-        const params = ConvertCurrencyParams(from: 'USD', to: '', amount: 100);
+      test(
+        'should return ApiResult.failure when to currency is empty',
+        () async {
+          // Arrange
+          const params = ConvertCurrencyParams(
+            from: 'USD',
+            to: '',
+            amount: 100,
+          );
 
-        // Act
-        final result = await useCase(params);
+          // Act
+          final result = await useCase(params);
 
-        // Assert
-        expect(result.isSuccess, false);
-        result.when(
-          success: (_) => fail('Should not be success'),
-          failure: (error) {
-            expect(error.failure.message, 'Currency codes cannot be empty');
-          },
-        );
-        expect(mockRepository.calls, isEmpty);
-      });
+          // Assert
+          expect(result.isSuccess, false);
+          result.when(
+            success: (_) => fail('Should not be success'),
+            failure: (error) {
+              expect(error.failure.message, 'Currency codes cannot be empty');
+            },
+          );
+          expect(mockRepository.calls, isEmpty);
+        },
+      );
 
-      test('should return ApiResult.failure when both currencies are empty', () async {
-        // Arrange
-        const params = ConvertCurrencyParams(from: '', to: '', amount: 100);
+      test(
+        'should return ApiResult.failure when both currencies are empty',
+        () async {
+          // Arrange
+          const params = ConvertCurrencyParams(from: '', to: '', amount: 100);
 
-        // Act
-        final result = await useCase(params);
+          // Act
+          final result = await useCase(params);
 
-        // Assert
-        expect(result.isSuccess, false);
-        expect(mockRepository.calls, isEmpty);
-      });
+          // Assert
+          expect(result.isSuccess, false);
+          expect(mockRepository.calls, isEmpty);
+        },
+      );
     });
 
     group('same currency conversion', () {
-      test('should return identity conversion without calling repository', () async {
-        // Arrange
-        const params = ConvertCurrencyParams(
-          from: 'USD',
-          to: 'USD',
-          amount: 100,
-        );
+      test(
+        'should return identity conversion without calling repository',
+        () async {
+          // Arrange
+          const params = ConvertCurrencyParams(
+            from: 'USD',
+            to: 'USD',
+            amount: 100,
+          );
 
-        // Act
-        final apiResult = await useCase(params);
+          // Act
+          final apiResult = await useCase(params);
 
-        // Assert
-        expect(mockRepository.calls, isEmpty);
-        expect(apiResult.isSuccess, true);
-        apiResult.when(
-          success: (result) {
-            expect(result.fromCurrency, 'USD');
-            expect(result.toCurrency, 'USD');
-            expect(result.amount, 100);
-            expect(result.quote, 1.0);
-            expect(result.result, 100);
-          },
-          failure: (_) => fail('Should not be failure'),
-        );
-      });
+          // Assert
+          expect(mockRepository.calls, isEmpty);
+          expect(apiResult.isSuccess, true);
+          apiResult.when(
+            success: (result) {
+              expect(result.fromCurrency, 'USD');
+              expect(result.toCurrency, 'USD');
+              expect(result.amount, 100);
+              expect(result.quote, 1.0);
+              expect(result.result, 100);
+            },
+            failure: (_) => fail('Should not be failure'),
+          );
+        },
+      );
 
       test('should handle same currency with decimal amount', () async {
         // Arrange

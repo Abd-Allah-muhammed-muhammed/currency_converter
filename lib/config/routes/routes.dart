@@ -3,5 +3,4 @@ enum AppRoutes {
   splash,
   currencyPicker,
   exchangeHistory,
-
 }

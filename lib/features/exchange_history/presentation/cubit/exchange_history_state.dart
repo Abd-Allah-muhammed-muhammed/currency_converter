@@ -1,4 +1,5 @@
 import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
+import 'package:currency_converter/features/exchange_history/presentation/widgets/time_period_selector.dart';
 import 'package:flutter/foundation.dart';
 
 /// Base class for all exchange history states.
@@ -39,6 +40,7 @@ class ExchangeHistoryLoaded extends ExchangeHistoryState {
     required this.averageRate,
     required this.chartData,
     required this.periodDays,
+    required this.selectedPeriod,
   });
 
   /// The exchange history data.
@@ -80,6 +82,9 @@ class ExchangeHistoryLoaded extends ExchangeHistoryState {
   /// The number of days in the current period.
   final int periodDays;
 
+  /// The currently selected time period.
+  final TimePeriod selectedPeriod;
+
   /// Creates a copy with updated values.
   ExchangeHistoryLoaded copyWith({
     ExchangeHistory? history,
@@ -95,6 +100,7 @@ class ExchangeHistoryLoaded extends ExchangeHistoryState {
     double? averageRate,
     List<RateDataPoint>? chartData,
     int? periodDays,
+    TimePeriod? selectedPeriod,
   }) {
     return ExchangeHistoryLoaded(
       history: history ?? this.history,
@@ -110,6 +116,7 @@ class ExchangeHistoryLoaded extends ExchangeHistoryState {
       averageRate: averageRate ?? this.averageRate,
       chartData: chartData ?? this.chartData,
       periodDays: periodDays ?? this.periodDays,
+      selectedPeriod: selectedPeriod ?? this.selectedPeriod,
     );
   }
 }

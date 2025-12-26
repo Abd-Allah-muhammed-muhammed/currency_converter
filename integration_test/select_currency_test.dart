@@ -77,6 +77,7 @@ void main() {
     ValueChanged<Currency>? onCurrencySelected,
   }) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: FlutterSizer(
         builder: (context, orientation, deviceType) {
           return CurrencyPickerPage(
@@ -88,17 +89,17 @@ void main() {
     );
   }
 
-  setUp(() {
+  setUp(() async {
     // Reset GetIt before each test
     final getIt = GetIt.instance;
     if (getIt.isRegistered<CurrencyBloc>()) {
-      getIt.unregister<CurrencyBloc>();
+      await getIt.unregister<CurrencyBloc>();
     }
     if (getIt.isRegistered<GetCurrencies>()) {
-      getIt.unregister<GetCurrencies>();
+      await getIt.unregister<GetCurrencies>();
     }
     if (getIt.isRegistered<CurrencyRepository>()) {
-      getIt.unregister<CurrencyRepository>();
+      await getIt.unregister<CurrencyRepository>();
     }
 
     // Create mocks
@@ -114,10 +115,10 @@ void main() {
     );
   });
 
-  tearDown(() {
+  tearDown(() async {
     final getIt = GetIt.instance;
     if (getIt.isRegistered<CurrencyBloc>()) {
-      getIt.unregister<CurrencyBloc>();
+      await getIt.unregister<CurrencyBloc>();
     }
   });
 
@@ -393,12 +394,13 @@ void main() {
         // Use Navigator to test back navigation
         await tester.pumpWidget(
           MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: Builder(
               builder: (context) {
                 return Scaffold(
                   body: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
+                    onPressed: () async {
+                      await Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => FlutterSizer(
                             builder: (context, orientation, deviceType) {

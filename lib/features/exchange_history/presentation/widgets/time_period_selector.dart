@@ -1,6 +1,6 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// Available time period options for historical data.
 enum TimePeriod {
@@ -9,16 +9,16 @@ enum TimePeriod {
   threeMonths('3M'),
   oneYear('1Y');
 
-  final String label;
   const TimePeriod(this.label);
+  final String label;
 }
 
 /// A widget for selecting time period tabs.
 class TimePeriodSelector extends StatelessWidget {
   const TimePeriodSelector({
-    super.key,
     required this.selectedPeriod,
     required this.onPeriodChanged,
+    super.key,
   });
 
   /// The currently selected time period.
@@ -45,7 +45,9 @@ class TimePeriodSelector extends StatelessWidget {
                 duration: const Duration(milliseconds: 200),
                 padding: EdgeInsets.symmetric(vertical: 1.2.h),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.cardBackground : Colors.transparent,
+                  color: isSelected
+                      ? AppColors.cardBackground
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: isSelected
                       ? [
@@ -62,8 +64,12 @@ class TimePeriodSelector extends StatelessWidget {
                     period.label,
                     style: TextStyle(
                       fontSize: 14.dp,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      color: isSelected ? AppColors.cyan : AppColors.textSecondary,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? AppColors.cyan
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ),

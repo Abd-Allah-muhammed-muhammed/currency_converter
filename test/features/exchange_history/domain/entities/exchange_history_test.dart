@@ -24,7 +24,7 @@ void main() {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -54,7 +54,7 @@ void main() {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -70,7 +70,8 @@ void main() {
           targetCurrency: 'EUR',
           rates: [
             RateDataPoint(date: DateTime(2025, 12, 19), rate: 0.738541),
-            RateDataPoint(date: DateTime(2025, 12, 20), rate: 0.750000), // Highest
+            // Highest
+            RateDataPoint(date: DateTime(2025, 12, 20), rate: 0.750000),
             RateDataPoint(date: DateTime(2025, 12, 21), rate: 0.740000),
           ],
           startDate: DateTime(2025, 12, 19),
@@ -84,7 +85,7 @@ void main() {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -114,7 +115,8 @@ void main() {
           targetCurrency: 'EUR',
           rates: [
             RateDataPoint(date: DateTime(2025, 12, 19), rate: 0.738541),
-            RateDataPoint(date: DateTime(2025, 12, 20), rate: 0.720000), // Lowest
+            // Lowest
+            RateDataPoint(date: DateTime(2025, 12, 20), rate: 0.720000),
             RateDataPoint(date: DateTime(2025, 12, 21), rate: 0.740000),
           ],
           startDate: DateTime(2025, 12, 19),
@@ -128,7 +130,7 @@ void main() {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -152,14 +154,17 @@ void main() {
         );
 
         // Use closeTo matcher for floating point comparison
-        expect(history.averageRate, closeTo(0.80, 0.0001)); // (0.70 + 0.80 + 0.90) / 3
+        expect(
+          history.averageRate,
+          closeTo(0.80, 0.0001),
+        ); // (0.70 + 0.80 + 0.90) / 3
       });
 
       test('should return null when rates are empty', () {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -188,7 +193,7 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1),
             RateDataPoint(date: DateTime(2025, 12, 20), rate: 1.05),
             RateDataPoint(date: DateTime(2025, 12, 21), rate: 1.10),
           ],
@@ -205,7 +210,7 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1),
             RateDataPoint(date: DateTime(2025, 12, 20), rate: 0.95),
             RateDataPoint(date: DateTime(2025, 12, 21), rate: 0.90),
           ],
@@ -221,7 +226,7 @@ void main() {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -234,8 +239,8 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 0.0),
-            RateDataPoint(date: DateTime(2025, 12, 21), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 0),
+            RateDataPoint(date: DateTime(2025, 12, 21), rate: 1),
           ],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
@@ -249,8 +254,8 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1.0),
-            RateDataPoint(date: DateTime(2025, 12, 21), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1),
+            RateDataPoint(date: DateTime(2025, 12, 21), rate: 1),
           ],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
@@ -266,7 +271,7 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1),
             RateDataPoint(date: DateTime(2025, 12, 21), rate: 1.10),
           ],
           startDate: DateTime(2025, 12, 19),
@@ -281,7 +286,7 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1),
             RateDataPoint(date: DateTime(2025, 12, 21), rate: 0.90),
           ],
           startDate: DateTime(2025, 12, 19),
@@ -296,8 +301,8 @@ void main() {
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
           rates: [
-            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1.0),
-            RateDataPoint(date: DateTime(2025, 12, 21), rate: 1.0),
+            RateDataPoint(date: DateTime(2025, 12, 19), rate: 1),
+            RateDataPoint(date: DateTime(2025, 12, 21), rate: 1),
           ],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
@@ -310,7 +315,7 @@ void main() {
         final history = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -344,7 +349,7 @@ void main() {
         final history1 = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'EUR',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );
@@ -352,7 +357,7 @@ void main() {
         final history2 = ExchangeHistory(
           sourceCurrency: 'USD',
           targetCurrency: 'GBP',
-          rates: [],
+          rates: const [],
           startDate: DateTime(2025, 12, 19),
           endDate: DateTime(2025, 12, 21),
         );

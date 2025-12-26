@@ -1,14 +1,15 @@
 import 'dart:developer' as developer;
 
-import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_constants.dart';
 import 'package:currency_converter/core/network/api_service.dart';
 import 'package:currency_converter/features/exchange_history/data/models/exchange_history_model.dart';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 
 /// Remote data source for exchange history operations.
 ///
 /// This class handles all API calls for exchange rate history.
+// ignore: one_member_abstracts
 abstract class ExchangeHistoryRemoteDataSource {
   /// Gets historical exchange rates for a time period.
   ///
@@ -92,7 +93,8 @@ class ExchangeHistoryRemoteDataSourceImpl
           requestOptions: response.response.requestOptions,
           response: response.response,
           message:
-              'Failed to fetch exchange history: ${response.response.statusCode}',
+              'Failed to fetch exchange history: '
+              '${response.response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }
@@ -109,7 +111,6 @@ class ExchangeHistoryRemoteDataSourceImpl
       throw DioException(
         requestOptions: RequestOptions(path: ApiConstants.timeframe),
         message: 'Unexpected error: $e',
-        type: DioExceptionType.unknown,
         error: e,
       );
     }

@@ -1,5 +1,5 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 /// Database helper class for managing SQLite database operations.
 ///
@@ -37,7 +37,7 @@ class DatabaseHelper {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, _databaseName);
 
-    return await openDatabase(
+    return openDatabase(
       path,
       version: _databaseVersion,
       onCreate: _onCreate,
@@ -80,7 +80,7 @@ class DatabaseHelper {
   /// Gets all currencies from the database.
   Future<List<Map<String, dynamic>>> getCurrencies() async {
     final db = await database;
-    return await db.query(tableCurrencies, orderBy: '$columnName ASC');
+    return db.query(tableCurrencies, orderBy: '$columnName ASC');
   }
 
   /// Gets a single currency by code.
@@ -98,7 +98,9 @@ class DatabaseHelper {
   /// Checks if currencies exist in the database.
   Future<bool> hasCurrencies() async {
     final db = await database;
-    final result = await db.rawQuery('SELECT COUNT(*) as count FROM $tableCurrencies');
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM $tableCurrencies',
+    );
     final count = Sqflite.firstIntValue(result) ?? 0;
     return count > 0;
   }

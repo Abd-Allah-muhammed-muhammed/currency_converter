@@ -1,12 +1,15 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:currency_converter/core/network/api_error_handler.dart';
-import 'package:currency_converter/core/network/api_error_model.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_model.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/domain/repositories/exchange_history_repository.dart';
 import 'package:currency_converter/features/exchange_history/domain/usecases/get_exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/presentation/cubit/exchange_history_cubit.dart';
 import 'package:currency_converter/features/exchange_history/presentation/cubit/exchange_history_state.dart';
+import 'package:currency_converter/features/exchange_history/presentation/widgets/time_period_selector.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Mock implementation of ExchangeHistoryRepository for testing.
@@ -16,12 +19,14 @@ class MockExchangeHistoryRepository implements ExchangeHistoryRepository {
   ApiResult<ExchangeHistory>? result;
   ErrorHandler? errorHandler;
   final List<
-      ({
-        String sourceCurrency,
-        String targetCurrency,
-        DateTime startDate,
-        DateTime endDate,
-      })> calls = [];
+    ({
+      String sourceCurrency,
+      String targetCurrency,
+      DateTime startDate,
+      DateTime endDate,
+    })
+  >
+  calls = [];
 
   @override
   Future<ApiResult<ExchangeHistory>> getExchangeHistory({
@@ -38,7 +43,7 @@ class MockExchangeHistoryRepository implements ExchangeHistoryRepository {
     ));
 
     if (errorHandler != null) {
-      return ApiResult.failure(errorHandler!);
+      return ApiResult.failure(errorHandler);
     }
 
     return result ??
@@ -71,7 +76,7 @@ void main() {
     });
 
     tearDown(() {
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     test('initial state should be ExchangeHistoryInitial', () {
@@ -87,7 +92,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         ),
         expect: () => [
           isA<ExchangeHistoryLoading>()
@@ -104,7 +108,7 @@ void main() {
         'emits [Loading, Error] when loadHistory fails',
         build: () {
           mockRepository.errorHandler = ErrorHandler.fromMessage(
-            ApiErrorModel(message: 'Network error', code: 500),
+            const ApiErrorModel(message: 'Network error', code: 500),
           );
           return ExchangeHistoryCubit(
             getExchangeHistory: GetExchangeHistory(mockRepository),
@@ -115,12 +119,14 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         ),
         expect: () => [
           isA<ExchangeHistoryLoading>(),
-          isA<ExchangeHistoryError>()
-              .having((s) => s.message, 'message', 'Network error'),
+          isA<ExchangeHistoryError>().having(
+            (s) => s.message,
+            'message',
+            'Network error',
+          ),
         ],
       );
 
@@ -131,7 +137,7 @@ void main() {
             ExchangeHistory(
               sourceCurrency: 'USD',
               targetCurrency: 'EUR',
-              rates: [],
+              rates: const [],
               startDate: DateTime(2025, 12, 19),
               endDate: DateTime(2025, 12, 25),
             ),
@@ -145,7 +151,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         ),
         expect: () => [
           isA<ExchangeHistoryLoading>(),
@@ -163,7 +168,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         );
 
         expect(mockRepository.calls.length, 1);
@@ -191,7 +195,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         );
 
         final state = cubit.state as ExchangeHistoryLoaded;
@@ -220,24 +223,26 @@ void main() {
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
           currentRate: 0.9,
-          changePercentage: 0.0,
+          changePercentage: 0,
           isPositiveChange: true,
           highRate: 0.9,
           lowRate: 0.9,
           averageRate: 0.9,
           chartData: [RateDataPoint(date: DateTime(2025, 12, 19), rate: 0.9)],
           periodDays: 7,
+          selectedPeriod: TimePeriod.oneWeek,
         ),
         act: (cubit) {
           // Set internal currency names
-          cubit.loadHistory(
-            sourceCurrency: 'USD',
-            targetCurrency: 'EUR',
-            sourceCurrencyName: 'US Dollar',
-            targetCurrencyName: 'Euro',
-            days: 7,
+          unawaited(
+            cubit.loadHistory(
+              sourceCurrency: 'USD',
+              targetCurrency: 'EUR',
+              sourceCurrencyName: 'US Dollar',
+              targetCurrencyName: 'Euro',
+            ),
           );
-          return cubit.changePeriod(30);
+          return cubit.changePeriod(TimePeriod.oneMonth);
         },
         verify: (_) {
           // Should have made 2 calls - initial and changePeriod
@@ -253,7 +258,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         );
 
         mockRepository.calls.clear();
@@ -273,7 +277,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         );
 
         mockRepository.calls.clear();
@@ -293,7 +296,6 @@ void main() {
           targetCurrency: 'EUR',
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
-          days: 7,
         );
 
         expect(cubit.sourceCurrency, 'USD');
@@ -312,7 +314,7 @@ void main() {
           history: ExchangeHistory(
             sourceCurrency: 'USD',
             targetCurrency: 'EUR',
-            rates: [],
+            rates: const [],
             startDate: DateTime(2025, 12, 19),
             endDate: DateTime(2025, 12, 25),
           ),
@@ -321,22 +323,25 @@ void main() {
           sourceCurrencyName: 'US Dollar',
           targetCurrencyName: 'Euro',
           currentRate: 0.9,
-          changePercentage: 1.0,
+          changePercentage: 1,
           isPositiveChange: true,
           highRate: 0.95,
           lowRate: 0.85,
           averageRate: 0.9,
-          chartData: [],
+          chartData: const [],
           periodDays: 7,
+          selectedPeriod: TimePeriod.oneWeek,
         );
 
         final updated = original.copyWith(
           currentRate: 0.92,
           periodDays: 30,
+          selectedPeriod: TimePeriod.oneMonth,
         );
 
         expect(updated.currentRate, 0.92);
         expect(updated.periodDays, 30);
+        expect(updated.selectedPeriod, TimePeriod.oneMonth);
         // Unchanged fields
         expect(updated.sourceCurrency, 'USD');
         expect(updated.targetCurrency, 'EUR');

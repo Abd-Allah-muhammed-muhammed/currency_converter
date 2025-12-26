@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A widget for currency selection dropdown.
 class CurrencySelector extends StatelessWidget {
   const CurrencySelector({
-    super.key,
     required this.currencyCode,
+    super.key,
     this.flagUrl,
     this.onTap,
   });
@@ -78,7 +78,7 @@ class CurrencySelector extends StatelessWidget {
               ),
             ),
             SizedBox(width: 1.w),
-            Icon(
+            const Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 20,
               color: AppColors.textSecondary,
@@ -93,10 +93,10 @@ class CurrencySelector extends StatelessWidget {
 /// A card widget for currency input (YOU PAY / YOU GET).
 class CurrencyInputCard extends StatelessWidget {
   const CurrencyInputCard({
-    super.key,
     required this.label,
     required this.currencyCode,
     required this.currencyName,
+    super.key,
     this.amount,
     this.controller,
     this.flagUrl,
@@ -146,7 +146,7 @@ class CurrencyInputCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.white.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -166,7 +166,6 @@ class CurrencyInputCard extends StatelessWidget {
           ),
           SizedBox(height: 1.h),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: isEditable
@@ -180,6 +179,7 @@ class CurrencyInputCard extends StatelessWidget {
                           fontSize: 32.dp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
+
                         ),
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -187,7 +187,7 @@ class CurrencyInputCard extends StatelessWidget {
                           hintStyle: TextStyle(
                             fontSize: 32.dp,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textMuted,
+                            color: AppColors.textSecondary,
                           ),
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
@@ -198,7 +198,9 @@ class CurrencyInputCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 32.dp,
                           fontWeight: FontWeight.bold,
-                          color: isResult ? AppColors.cyan : AppColors.textPrimary,
+                          color: isResult
+                              ? AppColors.cyan
+                              : AppColors.textPrimary,
                         ),
                       ),
               ),

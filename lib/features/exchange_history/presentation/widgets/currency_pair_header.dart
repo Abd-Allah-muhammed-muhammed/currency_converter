@@ -1,16 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A header widget displaying currency pair with flags and swap button.
 class CurrencyPairHeader extends StatelessWidget {
   const CurrencyPairHeader({
-    super.key,
     required this.fromCurrency,
     required this.toCurrency,
     required this.fromCurrencyName,
     required this.toCurrencyName,
+    super.key,
     this.fromFlagUrl,
     this.toFlagUrl,
     this.onSwapTap,
@@ -81,7 +81,7 @@ class CurrencyPairHeader extends StatelessWidget {
                 color: AppColors.textMuted.withValues(alpha: 0.2),
               ),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.swap_vert_rounded,
               color: AppColors.textSecondary,
               size: 20,
@@ -143,7 +143,7 @@ class CurrencyPairHeader extends StatelessWidget {
   }
 
   Widget _buildFlagPlaceholder() {
-    return Container(
+    return ColoredBox(
       color: Colors.grey.shade200,
       child: Icon(
         Icons.flag_rounded,

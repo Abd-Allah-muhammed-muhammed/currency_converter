@@ -101,7 +101,7 @@ void main() {
       late ExchangeHistoryModel model;
 
       setUp(() {
-        model = ExchangeHistoryModel.fromJson({
+        model = ExchangeHistoryModel.fromJson(const {
           'success': true,
           'timeframe': true,
           'start_date': '2025-12-19',
@@ -133,7 +133,7 @@ void main() {
     group('getRatesForCurrency', () {
       test('should return sorted list of rate points', () {
         // Arrange
-        final model = ExchangeHistoryModel.fromJson({
+        final model = ExchangeHistoryModel.fromJson(const {
           'success': true,
           'timeframe': true,
           'start_date': '2025-12-19',
@@ -162,7 +162,7 @@ void main() {
 
       test('should return empty list for non-existing currency', () {
         // Arrange
-        final model = ExchangeHistoryModel.fromJson({
+        final model = ExchangeHistoryModel.fromJson(const {
           'success': true,
           'timeframe': true,
           'start_date': '2025-12-19',
@@ -182,7 +182,7 @@ void main() {
 
       test('should skip invalid dates', () {
         // Arrange
-        final model = ExchangeHistoryModel.fromJson({
+        final model = ExchangeHistoryModel.fromJson(const {
           'success': true,
           'timeframe': true,
           'start_date': '2025-12-19',

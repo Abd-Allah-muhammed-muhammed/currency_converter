@@ -1,12 +1,12 @@
 import 'dart:developer' as developer;
 
-import 'package:dio/dio.dart';
-import 'package:injectable/injectable.dart';
-import 'package:currency_converter/core/network/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/features/home/data/datasources/conversion_remote_data_source.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:currency_converter/features/home/domain/repositories/conversion_repository.dart';
+import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 
 /// Implementation of [ConversionRepository].
 ///
@@ -52,7 +52,7 @@ class ConversionRepositoryImpl implements ConversionRepository {
       );
 
       return ApiResult.failure(ErrorHandler.handle(e));
-    } catch (e) {
+    } on Object catch (e) {
       developer.log(
         'Unexpected error during conversion: $e',
         name: 'ConversionRepository',

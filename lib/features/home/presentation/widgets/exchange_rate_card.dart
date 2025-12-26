@@ -1,7 +1,7 @@
+import 'package:currency_converter/core/utils/colors.dart';
+import 'package:currency_converter/features/home/presentation/widgets/exchange_rate_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
-import 'exchange_rate_chart.dart';
 
 /// A card widget displaying the exchange rate with a chart background.
 class ExchangeRateCard extends StatelessWidget {
@@ -53,6 +53,21 @@ class ExchangeRateCard extends StatelessWidget {
                   height: 100,
                 ),
               ),
+
+              // Click indicator icon
+              Positioned(
+                top: 3.w,
+                right: 3.w,
+                child: GestureDetector(
+                  child: Icon(
+                    Icons.arrow_circle_right,
+                    size: 25.dp,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ),
+
+
               // Content overlay
               Padding(
                 padding: EdgeInsets.all(5.w),

@@ -13,13 +13,13 @@ class ApiConstants {
 
   /// API key for ExchangeRate.host.
   /// Loaded from environment variables to avoid exposing sensitive data.
-  static String get apiKey =>
-      dotenv.env['API_KEY'] ?? '';
+  static String get apiKey => dotenv.env['API_KEY'] ?? '';
 
   // ============ Endpoints ============
 
   /// Get list of supported currencies.
-  /// Response: {"success": true, "currencies": {"USD": "United States Dollar", ...}}
+  /// Response: {"success": true, "currencies": {"USD": "United States
+  /// Dollar", ...}}
   static const String currenciesList = '/list';
 
   /// Convert currency.

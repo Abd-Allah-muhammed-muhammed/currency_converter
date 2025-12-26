@@ -1,12 +1,12 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A primary action button with gradient background.
 class ConvertButton extends StatelessWidget {
   const ConvertButton({
-    super.key,
     required this.text,
+    super.key,
     this.onPressed,
     this.isLoading = false,
   });

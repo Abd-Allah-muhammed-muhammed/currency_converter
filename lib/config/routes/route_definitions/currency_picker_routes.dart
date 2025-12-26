@@ -1,6 +1,6 @@
 import 'package:currency_converter/config/routes/routes.dart';
 import 'package:currency_converter/features/currency/presentation/pages/currency_picker_page.dart';
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final List<GoRoute> currencyPickerRoutes = [
@@ -15,13 +15,16 @@ final List<GoRoute> currencyPickerRoutes = [
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            )),
+            position:
+                Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                ),
             child: child,
           );
         },

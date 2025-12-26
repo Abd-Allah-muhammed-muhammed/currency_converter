@@ -1,13 +1,15 @@
+import 'dart:async';
+
 import 'package:currency_converter/core/di/injectable_config.dart';
+import 'package:currency_converter/core/utils/colors.dart';
+import 'package:currency_converter/features/currency/domain/entities/currency.dart';
+import 'package:currency_converter/features/currency/presentation/bloc/bloc.dart';
+import 'package:currency_converter/features/currency/presentation/widgets/currency_list_item.dart';
+import 'package:currency_converter/features/currency/presentation/widgets/currency_search_field.dart';
+import 'package:currency_converter/features/currency/presentation/widgets/currency_section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
- import 'package:currency_converter/core/utils/colors.dart';
-import 'package:currency_converter/features/currency/domain/entities/currency.dart';
-import 'package:currency_converter/features/currency/presentation/bloc/bloc.dart';
-import '../widgets/currency_search_field.dart';
-import '../widgets/currency_list_item.dart';
-import '../widgets/currency_section_header.dart';
 
 /// Page for selecting a currency from a list.
 ///
@@ -45,7 +47,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
   @override
   void dispose() {
     _searchController.dispose();
-    _currencyBloc.close();
+    unawaited(_currencyBloc.close());
     super.dispose();
   }
 
@@ -83,8 +85,9 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
                     return switch (state) {
                       CurrencyInitial() => const SizedBox.shrink(),
                       CurrencyLoading() => _buildLoadingState(),
-                      CurrencyError(:final message) =>
-                        _buildErrorState(message),
+                      CurrencyError(:final message) => _buildErrorState(
+                        message,
+                      ),
                       CurrencyLoaded() => _buildCurrencyList(state),
                     };
                   },
@@ -102,7 +105,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
       backgroundColor: AppColors.backgroundLight,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back_ios_rounded,
           color: AppColors.textPrimary,
           size: 20,
@@ -124,7 +127,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
           builder: (context, state) {
             if (state is CurrencyLoaded && state.isFromCache) {
               return IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.refresh_rounded,
                   color: AppColors.cyan,
                   size: 24,
@@ -147,7 +150,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             color: AppColors.cyan,
             strokeWidth: 3,
           ),
@@ -171,7 +174,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline_rounded,
               size: 64,
               color: AppColors.error,
@@ -299,7 +302,7 @@ class _CurrencyPickerPageState extends State<CurrencyPickerPage> {
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Column(
           children: [
-            Icon(
+            const Icon(
               Icons.search_off_rounded,
               size: 64,
               color: AppColors.textMuted,

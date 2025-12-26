@@ -12,15 +12,6 @@ class CurrencyModel {
     this.flagUrl,
   });
 
-  /// The currency code (e.g., 'USD', 'EUR').
-  final String code;
-
-  /// The full name of the currency.
-  final String name;
-
-  /// The URL of the country flag image.
-  final String? flagUrl;
-
   /// Creates a [CurrencyModel] from API JSON response.
   ///
   /// The API returns currencies as a map: {"USD": "United States Dollar", ...}
@@ -48,6 +39,24 @@ class CurrencyModel {
     );
   }
 
+  /// Creates a [CurrencyModel] from a domain entity.
+  factory CurrencyModel.fromEntity(Currency entity) {
+    return CurrencyModel(
+      code: entity.code,
+      name: entity.name,
+      flagUrl: entity.flagUrl,
+    );
+  }
+
+  /// The currency code (e.g., 'USD', 'EUR').
+  final String code;
+
+  /// The full name of the currency.
+  final String name;
+
+  /// The URL of the country flag image.
+  final String? flagUrl;
+
   /// Converts the model to a database map.
   Map<String, dynamic> toDatabase() {
     return {
@@ -63,15 +72,6 @@ class CurrencyModel {
       code: code,
       name: name,
       flagUrl: flagUrl,
-    );
-  }
-
-  /// Creates a [CurrencyModel] from a domain entity.
-  factory CurrencyModel.fromEntity(Currency entity) {
-    return CurrencyModel(
-      code: entity.code,
-      name: entity.name,
-      flagUrl: entity.flagUrl,
     );
   }
 

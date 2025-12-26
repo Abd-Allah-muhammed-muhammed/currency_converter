@@ -1,10 +1,11 @@
-import 'package:injectable/injectable.dart';
-import 'package:currency_converter/core/network/api_error_handler.dart';
-import 'package:currency_converter/core/network/api_error_model.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_model.dart';
 import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/network/errors/ResponseCode.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:currency_converter/features/home/domain/repositories/conversion_repository.dart';
+import 'package:injectable/injectable.dart';
 
 /// Parameters for the convert currency use case.
 class ConvertCurrencyParams {
@@ -28,7 +29,8 @@ class ConvertCurrencyParams {
 ///
 /// This use case encapsulates the business logic for currency conversion.
 @lazySingleton
-class ConvertCurrency implements UseCase<ConversionResult, ConvertCurrencyParams> {
+class ConvertCurrency
+    implements UseCase<ConversionResult, ConvertCurrencyParams> {
   const ConvertCurrency(this._repository);
 
   final ConversionRepository _repository;
@@ -43,7 +45,7 @@ class ConvertCurrency implements UseCase<ConversionResult, ConvertCurrencyParams
     if (params.amount <= 0) {
       return ApiResult.failure(
         ErrorHandler.fromMessage(
-          ApiErrorModel(
+          const ApiErrorModel(
             code: ResponseCode.badRequest,
             message: 'Amount must be greater than zero',
           ),
@@ -54,7 +56,7 @@ class ConvertCurrency implements UseCase<ConversionResult, ConvertCurrencyParams
     if (params.from.isEmpty || params.to.isEmpty) {
       return ApiResult.failure(
         ErrorHandler.fromMessage(
-          ApiErrorModel(
+          const ApiErrorModel(
             code: ResponseCode.badRequest,
             message: 'Currency codes cannot be empty',
           ),
@@ -70,7 +72,7 @@ class ConvertCurrency implements UseCase<ConversionResult, ConvertCurrencyParams
           fromCurrency: params.from,
           toCurrency: params.to,
           amount: params.amount,
-          quote: 1.0,
+          quote: 1,
           result: params.amount,
           timestamp: now,
         ),

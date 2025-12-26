@@ -1,5 +1,3 @@
-
-
 /// Popular currency codes.
 const popularCurrencyCodes = [
   'USD',

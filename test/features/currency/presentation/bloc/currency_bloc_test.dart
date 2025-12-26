@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:currency_converter/core/network/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
@@ -34,7 +36,7 @@ void main() {
   });
 
   tearDown(() {
-    bloc.close();
+    unawaited(bloc.close());
   });
 
   final tCurrencies = [
@@ -64,10 +66,12 @@ void main() {
       'emits [CurrencyLoading, CurrencyLoaded] when LoadCurrencies is added '
       'and getCurrencies returns success',
       build: () {
-        when(() => mockGetCurrencies(any()))
-            .thenAnswer((_) async => ApiResult.success(tCurrencies));
-        when(() => mockRepository.hasCachedCurrencies())
-            .thenAnswer((_) async => true);
+        when(
+          () => mockGetCurrencies(any()),
+        ).thenAnswer((_) async => ApiResult.success(tCurrencies));
+        when(
+          () => mockRepository.hasCachedCurrencies(),
+        ).thenAnswer((_) async => true);
         return bloc;
       },
       act: (bloc) => bloc.add(const LoadCurrencies()),
@@ -106,10 +110,12 @@ void main() {
     blocTest<CurrencyBloc, CurrencyState>(
       'extracts popular currencies correctly',
       build: () {
-        when(() => mockGetCurrencies(any()))
-            .thenAnswer((_) async => ApiResult.success(tCurrencies));
-        when(() => mockRepository.hasCachedCurrencies())
-            .thenAnswer((_) async => false);
+        when(
+          () => mockGetCurrencies(any()),
+        ).thenAnswer((_) async => ApiResult.success(tCurrencies));
+        when(
+          () => mockRepository.hasCachedCurrencies(),
+        ).thenAnswer((_) async => false);
         return bloc;
       },
       act: (bloc) => bloc.add(const LoadCurrencies()),
@@ -128,15 +134,19 @@ void main() {
     blocTest<CurrencyBloc, CurrencyState>(
       'emits [CurrencyLoading, CurrencyLoaded] when RefreshCurrencies succeeds',
       build: () {
-        when(() => mockRepository.refreshCurrencies())
-            .thenAnswer((_) async => ApiResult.success(tCurrencies));
+        when(
+          () => mockRepository.refreshCurrencies(),
+        ).thenAnswer((_) async => ApiResult.success(tCurrencies));
         return bloc;
       },
       act: (bloc) => bloc.add(const RefreshCurrencies()),
       expect: () => [
         const CurrencyLoading(),
-        isA<CurrencyLoaded>()
-            .having((s) => s.isFromCache, 'isFromCache', false),
+        isA<CurrencyLoaded>().having(
+          (s) => s.isFromCache,
+          'isFromCache',
+          false,
+        ),
       ],
       verify: (_) {
         verify(() => mockRepository.refreshCurrencies()).called(1);
@@ -165,10 +175,12 @@ void main() {
     blocTest<CurrencyBloc, CurrencyState>(
       'filters currencies by search query when in CurrencyLoaded state',
       build: () {
-        when(() => mockGetCurrencies(any()))
-            .thenAnswer((_) async => ApiResult.success(tCurrencies));
-        when(() => mockRepository.hasCachedCurrencies())
-            .thenAnswer((_) async => true);
+        when(
+          () => mockGetCurrencies(any()),
+        ).thenAnswer((_) async => ApiResult.success(tCurrencies));
+        when(
+          () => mockRepository.hasCachedCurrencies(),
+        ).thenAnswer((_) async => true);
         return bloc;
       },
       seed: () => CurrencyLoaded(
@@ -201,12 +213,11 @@ void main() {
         popularCurrencies: tCurrencies,
         isFromCache: true,
         searchQuery: 'usd',
-        filteredCurrencies: [tCurrencies.first],
+        filteredCurrencies: <Currency>[tCurrencies.first],
       ),
       act: (bloc) => bloc.add(const SearchCurrencies('')),
       expect: () => [
-        isA<CurrencyLoaded>()
-            .having((s) => s.searchQuery, 'searchQuery', ''),
+        isA<CurrencyLoaded>().having((s) => s.searchQuery, 'searchQuery', ''),
       ],
     );
 
@@ -234,7 +245,7 @@ void main() {
       'does nothing when not in CurrencyLoaded state',
       build: () => bloc,
       act: (bloc) => bloc.add(const SearchCurrencies('usd')),
-      expect: () => [],
+      expect: () => const <CurrencyState>[],
     );
 
     blocTest<CurrencyBloc, CurrencyState>(
@@ -247,28 +258,31 @@ void main() {
       ),
       act: (bloc) => bloc.add(const SearchCurrencies('xyz')),
       expect: () => [
-        isA<CurrencyLoaded>()
-            .having((s) => s.filteredCurrencies?.length, 'filtered length', 0),
+        isA<CurrencyLoaded>().having(
+          (s) => s.filteredCurrencies?.length,
+          'filtered length',
+          0,
+        ),
       ],
     );
   });
 
   group('CurrencyLoaded', () {
-    test('displayCurrencies returns all currencies when searchQuery is empty',
-        () {
-      final state = CurrencyLoaded(
-        currencies: tCurrencies,
-        popularCurrencies: tCurrencies,
-        isFromCache: true,
-        searchQuery: '',
-      );
-
-      expect(state.displayCurrencies, equals(tCurrencies));
-    });
-
     test(
-        'displayCurrencies returns filtered currencies when searchQuery is not empty',
-        () {
+      'displayCurrencies returns all currencies when searchQuery is empty',
+      () {
+        final state = CurrencyLoaded(
+          currencies: tCurrencies,
+          popularCurrencies: tCurrencies,
+          isFromCache: true,
+        );
+
+        expect(state.displayCurrencies, equals(tCurrencies));
+      },
+    );
+
+    test('displayCurrencies returns filtered currencies when searchQuery '
+        'is not empty', () {
       final filteredList = [tCurrencies.first];
       final state = CurrencyLoaded(
         currencies: tCurrencies,
@@ -286,7 +300,6 @@ void main() {
         currencies: tCurrencies,
         popularCurrencies: tCurrencies,
         isFromCache: true,
-        searchQuery: '',
       );
 
       final copied = original.copyWith(

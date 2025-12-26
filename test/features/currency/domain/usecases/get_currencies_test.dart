@@ -1,4 +1,4 @@
-import 'package:currency_converter/core/network/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
@@ -34,8 +34,9 @@ void main() {
   group('GetCurrencies', () {
     test('should get list of currencies from repository', () async {
       // Arrange
-      when(() => mockRepository.getCurrencies())
-          .thenAnswer((_) async => ApiResult.success(tCurrencies));
+      when(
+        () => mockRepository.getCurrencies(),
+      ).thenAnswer((_) async => ApiResult.success(tCurrencies));
 
       // Act
       final result = await useCase(const NoParams());
@@ -65,8 +66,9 @@ void main() {
 
     test('should use NoParams as parameter', () async {
       // Arrange
-      when(() => mockRepository.getCurrencies())
-          .thenAnswer((_) async => ApiResult.success(tCurrencies));
+      when(
+        () => mockRepository.getCurrencies(),
+      ).thenAnswer((_) async => ApiResult.success(tCurrencies));
 
       // Act
       final result = await useCase(const NoParams());

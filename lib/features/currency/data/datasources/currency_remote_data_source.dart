@@ -1,13 +1,14 @@
 import 'dart:developer' as developer;
-import 'package:currency_converter/core/network/api_service.dart';
-import 'package:dio/dio.dart';
 import 'package:currency_converter/core/network/api_constants.dart';
+import 'package:currency_converter/core/network/api_service.dart';
 import 'package:currency_converter/features/currency/data/models/currency_model.dart';
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 /// Remote data source for currency operations.
 ///
 /// This class handles all API calls for currencies.
+// ignore: one_member_abstracts
 abstract class CurrencyRemoteDataSource {
   /// Fetches all supported currencies from the API.
   ///
@@ -30,21 +31,21 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       if (response.response.statusCode == 200) {
         final data = response.data;
 
-
-
         // Check if the API response is successful
-        if (data['success'] == true && data['currencies'] != null) {
+        if (data is Map<String, dynamic> &&
+            data['success'] == true &&
+            data['currencies'] != null) {
           final currenciesMap = data['currencies'] as Map<String, dynamic>;
 
-          final currencies = currenciesMap.entries.map((entry) {
-            return CurrencyModel.fromApiJson(
-              entry.key,
-              entry.value as String,
-            );
-          }).toList();
-
-          // Sort currencies by name
-          currencies.sort((a, b) => a.name.compareTo(b.name));
+          final currencies =
+              currenciesMap.entries.map((entry) {
+                  return CurrencyModel.fromApiJson(
+                    entry.key,
+                    entry.value as String,
+                  );
+                }).toList()
+                // Sort currencies by name
+                ..sort((a, b) => a.name.compareTo(b.name));
 
           developer.log(
             'Fetched ${currencies.length} currencies from API',
@@ -61,7 +62,8 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       } else {
         throw DioException(
           requestOptions: response.response.requestOptions,
-          message: 'Failed to fetch currencies: ${response.response.statusCode}'
+          message:
+              'Failed to fetch currencies: ${response.response.statusCode}',
         );
       }
     } on DioException {

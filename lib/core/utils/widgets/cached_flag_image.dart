@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 class CachedFlagImage extends StatelessWidget {
   /// Creates a cached flag image widget.
   const CachedFlagImage({
-    super.key,
     required this.flagUrl,
+    super.key,
     this.width = 32,
     this.height = 32,
     this.borderRadius = 4,
@@ -79,8 +79,8 @@ class CachedFlagImage extends StatelessWidget {
 class CircularCachedFlagImage extends StatelessWidget {
   /// Creates a circular cached flag image widget.
   const CircularCachedFlagImage({
-    super.key,
     required this.flagUrl,
+    super.key,
     this.radius = 16,
     this.borderColor,
     this.borderWidth = 0,
@@ -113,29 +113,21 @@ class CircularCachedFlagImage extends StatelessWidget {
           width: radius * 2,
           height: radius * 2,
           fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            width: radius * 2,
-            height: radius * 2,
-            color: Colors.grey[200],
-            child: const Center(
-              child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          ),
-          errorWidget: (context, url, error) => Container(
-            width: radius * 2,
-            height: radius * 2,
-            color: Colors.grey[200],
-            child: const Icon(
-              Icons.flag_outlined,
-              size: 16,
-              color: Colors.grey,
-            ),
-          ),
+          placeholder: (context, url) => _buildFlagPlaceholder(),
+          errorWidget: (context, url, error) => _buildFlagPlaceholder()
         ),
+      ),
+    );
+  }
+
+
+  Widget _buildFlagPlaceholder() {
+    return ColoredBox(
+      color: Colors.grey.shade200,
+      child: Icon(
+        Icons.flag_rounded,
+        size: 24,
+        color: Colors.grey.shade400,
       ),
     );
   }

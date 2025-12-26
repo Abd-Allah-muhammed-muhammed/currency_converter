@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:currency_converter/core/utils/colors.dart';
+import 'package:flutter/material.dart';
 
 /// Application theme configuration.
 ///
@@ -14,7 +14,6 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.cyan,
-        brightness: Brightness.light,
         primary: AppColors.cyan,
         secondary: AppColors.turquoise,
         surface: AppColors.cardBackground,
@@ -50,7 +49,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.cardBackground,
+        fillColor: AppColors.backgroundLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -134,12 +133,12 @@ class AppTheme {
         brightness: Brightness.dark,
         primary: AppColors.cyan,
         secondary: AppColors.turquoise,
-        surface: const Color(0xFF1E1E2E),
+        surface:   Colors.white,
         error: AppColors.error,
       ),
-      scaffoldBackgroundColor: const Color(0xFF121218),
+      scaffoldBackgroundColor:   Colors.white,
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF121218),
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
@@ -150,7 +149,7 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFF1E1E2E),
+        color: AppColors.primaryColor,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
@@ -167,7 +166,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1E1E2E),
+        fillColor: AppColors.backgroundLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,

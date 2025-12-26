@@ -70,10 +70,12 @@ class MockApiService implements ApiService {
 void main() {
   // Initialize dotenv with test values before all tests
   setUpAll(() {
-    dotenv.testLoad(fileInput: '''
+    dotenv.testLoad(
+      fileInput: '''
 API_KEY=test_api_key_for_testing
 API_BASE_URL=https://api.exchangerate.host
-''');
+''',
+    );
   });
 
   group('ConversionRemoteDataSourceImpl', () {
@@ -162,7 +164,8 @@ API_BASE_URL=https://api.exchangerate.host
       );
 
       test(
-        'should throw DioException with default message when error info is missing',
+        'should throw DioException with default message when error info '
+        'is missing',
         () async {
           // Arrange
           mockApiService.responseData = {'success': false};
@@ -183,8 +186,9 @@ API_BASE_URL=https://api.exchangerate.host
 
       test('should throw DioException when status code is not 200', () async {
         // Arrange
-        mockApiService.statusCode = 500;
-        mockApiService.responseData = {'error': 'Internal server error'};
+        mockApiService
+          ..statusCode = 500
+          ..responseData = {'error': 'Internal server error'};
 
         // Act & Assert
         expect(
@@ -222,7 +226,7 @@ API_BASE_URL=https://api.exchangerate.host
 
       test('should wrap unexpected exceptions in DioException', () async {
         // Arrange
-        mockApiService.exception = FormatException('Invalid JSON');
+        mockApiService.exception = const FormatException('Invalid JSON');
 
         // Act & Assert
         expect(

@@ -1,13 +1,13 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A widget displaying the current exchange rate with change percentage.
 class ExchangeRateDisplay extends StatelessWidget {
   const ExchangeRateDisplay({
-    super.key,
     required this.rate,
     required this.toCurrency,
+    super.key,
     this.changePercentage = 0.0,
     this.isPositive = true,
   });
@@ -75,7 +75,8 @@ class ExchangeRateDisplay extends StatelessWidget {
                   ),
                   SizedBox(width: 1.w),
                   Text(
-                    '${isPositive ? '+' : ''}${changePercentage.toStringAsFixed(2)}%',
+                    '${isPositive ? '+' : ''}'
+                    '${changePercentage.toStringAsFixed(2)}%',
                     style: TextStyle(
                       fontSize: 13.dp,
                       fontWeight: FontWeight.w600,

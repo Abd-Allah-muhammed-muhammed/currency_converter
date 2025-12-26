@@ -32,7 +32,7 @@ class CurrencyLocalDataSourceImpl implements CurrencyLocalDataSource {
   @override
   Future<List<CurrencyModel>> getCurrencies() async {
     final maps = await databaseHelper.getCurrencies();
-    return maps.map((map) => CurrencyModel.fromDatabase(map)).toList();
+    return maps.map(CurrencyModel.fromDatabase).toList();
   }
 
   @override
@@ -50,7 +50,7 @@ class CurrencyLocalDataSourceImpl implements CurrencyLocalDataSource {
 
   @override
   Future<bool> hasCurrencies() async {
-    return await databaseHelper.hasCurrencies();
+    return databaseHelper.hasCurrencies();
   }
 
   @override

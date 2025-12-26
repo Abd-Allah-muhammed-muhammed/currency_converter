@@ -5,6 +5,7 @@ import 'package:currency_converter/features/home/domain/entities/conversion_resu
 ///
 /// This abstraction allows the domain layer to be independent
 /// of the data layer implementation.
+// ignore: one_member_abstracts
 abstract class ConversionRepository {
   /// Converts an amount from one currency to another.
   ///

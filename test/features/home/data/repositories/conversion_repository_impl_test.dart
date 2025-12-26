@@ -59,42 +59,45 @@ void main() {
         expect(mockDataSource.calls.first.amount, 100);
       });
 
-      test('should return ApiResult.success with ConversionResult entity', () async {
-        // Arrange
-        mockDataSource.result = const ConversionResultModel(
-          success: true,
-          fromCurrency: 'CAD',
-          toCurrency: 'EUR',
-          amount: 1000,
-          quote: 0.620998,
-          result: 620.998,
-          timestamp: 1766664244,
-        );
+      test(
+        'should return ApiResult.success with ConversionResult entity',
+        () async {
+          // Arrange
+          mockDataSource.result = const ConversionResultModel(
+            success: true,
+            fromCurrency: 'CAD',
+            toCurrency: 'EUR',
+            amount: 1000,
+            quote: 0.620998,
+            result: 620.998,
+            timestamp: 1766664244,
+          );
 
-        // Act
-        final apiResult = await repository.convert(
-          from: 'CAD',
-          to: 'EUR',
-          amount: 1000,
-        );
+          // Act
+          final apiResult = await repository.convert(
+            from: 'CAD',
+            to: 'EUR',
+            amount: 1000,
+          );
 
-        // Assert
-        expect(apiResult.isSuccess, true);
-        apiResult.when(
-          success: (result) {
-            expect(result.fromCurrency, 'CAD');
-            expect(result.toCurrency, 'EUR');
-            expect(result.amount, 1000);
-            expect(result.quote, 0.620998);
-            expect(result.result, 620.998);
-            expect(
-              result.timestamp,
-              DateTime.fromMillisecondsSinceEpoch(1766664244 * 1000),
-            );
-          },
-          failure: (_) => fail('Should not be failure'),
-        );
-      });
+          // Assert
+          expect(apiResult.isSuccess, true);
+          apiResult.when(
+            success: (result) {
+              expect(result.fromCurrency, 'CAD');
+              expect(result.toCurrency, 'EUR');
+              expect(result.amount, 1000);
+              expect(result.quote, 0.620998);
+              expect(result.result, 620.998);
+              expect(
+                result.timestamp,
+                DateTime.fromMillisecondsSinceEpoch(1766664244 * 1000),
+              );
+            },
+            failure: (_) => fail('Should not be failure'),
+          );
+        },
+      );
 
       test('should return ApiResult.failure on DioException', () async {
         // Arrange

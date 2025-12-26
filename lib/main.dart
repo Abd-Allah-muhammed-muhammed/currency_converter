@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load environment variables
-  await dotenv.load(fileName: '.env');
+  await dotenv.load();
 
   await EasyLocalization.ensureInitialized();
 
@@ -34,7 +34,6 @@ void main() async {
       supportedLocales: const [Locale('en'), Locale('ar'), Locale('fr')],
       path: 'assets/translations',
       fallbackLocale: const Locale('ar'),
-      saveLocale: true,
       child: const ConverterApp(),
     ),
   );
@@ -55,7 +54,6 @@ class ConverterApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
-          themeMode: ThemeMode.system,
           builder: (context, child) {
             return child!;
           },

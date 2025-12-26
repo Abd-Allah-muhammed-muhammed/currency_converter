@@ -1,21 +1,17 @@
 import 'dart:developer' as developer;
-import 'package:injectable/injectable.dart';
-import 'package:stream_transform/stream_transform.dart';
-import 'package:currency_converter/core/utils/conest.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:currency_converter/core/usecase/usecase.dart';
+import 'package:currency_converter/core/utils/conest.dart';
+import 'package:currency_converter/core/utils/transformers.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
 import 'package:currency_converter/features/currency/domain/repositories/currency_repository.dart';
 import 'package:currency_converter/features/currency/domain/usecases/get_currencies.dart';
 import 'package:currency_converter/features/currency/presentation/bloc/currency_event.dart';
 import 'package:currency_converter/features/currency/presentation/bloc/currency_state.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 const _duration = Duration(milliseconds: 300);
-
-EventTransformer<Event> debounce<Event>(Duration duration) {
-  return (events, mapper) => events.debounce(duration).switchMap(mapper);
-}
 
 /// Bloc for managing currency state.
 ///
@@ -36,7 +32,6 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
 
   final GetCurrencies _getCurrencies;
   final CurrencyRepository _repository;
-
 
   /// Handles [LoadCurrencies] event.
   Future<void> _onLoadCurrencies(
@@ -105,7 +100,6 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
         CurrencyLoaded(
           currencies: currencies,
           popularCurrencies: popularCurrencies,
-          isFromCache: false,
         ),
       );
     } else {
@@ -130,7 +124,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     final query = event.query.toLowerCase().trim();
 
     if (query.isEmpty) {
-      emit(currentState.copyWith(searchQuery: '', filteredCurrencies: null));
+      emit(currentState.copyWith(searchQuery: ''));
       return;
     }
 

@@ -27,26 +27,6 @@ class ExchangeHistoryModel {
     required this.quotes,
   });
 
-  /// Whether the API request was successful.
-  final bool success;
-
-  /// Whether the response contains timeframe data.
-  final bool timeframe;
-
-  /// The start date of the requested period.
-  final String startDate;
-
-  /// The end date of the requested period.
-  final String endDate;
-
-  /// The source (base) currency code.
-  final String source;
-
-  /// Map of date -> currency pair -> rate.
-  ///
-  /// Example: {"2025-12-19": {"USDEUR": 0.738541}}
-  final Map<String, Map<String, double>> quotes;
-
   /// Creates an [ExchangeHistoryModel] from JSON.
   factory ExchangeHistoryModel.fromJson(Map<String, dynamic> json) {
     final quotesJson = json['quotes'] as Map<String, dynamic>? ?? {};
@@ -73,6 +53,26 @@ class ExchangeHistoryModel {
       quotes: quotes,
     );
   }
+
+  /// Whether the API request was successful.
+  final bool success;
+
+  /// Whether the response contains timeframe data.
+  final bool timeframe;
+
+  /// The start date of the requested period.
+  final String startDate;
+
+  /// The end date of the requested period.
+  final String endDate;
+
+  /// The source (base) currency code.
+  final String source;
+
+  /// Map of date -> currency pair -> rate.
+  ///
+  /// Example: {"2025-12-19": {"USDEUR": 0.738541}}
+  final Map<String, Map<String, double>> quotes;
 
   /// Gets the rate for a specific date and currency pair.
   ///

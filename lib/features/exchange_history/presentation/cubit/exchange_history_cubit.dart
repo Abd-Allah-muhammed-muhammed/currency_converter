@@ -1,9 +1,11 @@
 import 'dart:developer' as developer;
 
-import 'package:injectable/injectable.dart';
+import 'package:currency_converter/features/exchange_history/data/models/GetExchangeHistoryParams.dart';
 import 'package:currency_converter/features/exchange_history/domain/usecases/get_exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/presentation/cubit/exchange_history_state.dart';
+import 'package:currency_converter/features/exchange_history/presentation/widgets/time_period_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 /// Cubit for managing exchange history state.
 ///
@@ -25,6 +27,7 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
   String _sourceCurrencyName = 'US Dollar';
   String _targetCurrencyName = 'Euro';
   int _currentPeriodDays = 7;
+  TimePeriod _selectedPeriod = TimePeriod.oneWeek;
 
   /// Gets the current source currency.
   String get sourceCurrency => _sourceCurrency;
@@ -41,6 +44,9 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
   /// Gets the current period in days.
   int get currentPeriodDays => _currentPeriodDays;
 
+  /// Gets the currently selected time period.
+  TimePeriod get selectedPeriod => _selectedPeriod;
+
   /// Loads exchange history for the current currencies.
   ///
   /// [sourceCurrency] - The source currency code.
@@ -56,7 +62,8 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
     int days = 7,
   }) async {
     developer.log(
-      'Loading exchange history: $sourceCurrency -> $targetCurrency, $days days',
+      'Loading exchange history: '
+      '$sourceCurrency -> $targetCurrency, $days days',
       name: 'ExchangeHistoryCubit',
     );
 
@@ -84,7 +91,8 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
     result.when(
       success: (history) {
         developer.log(
-          'Exchange history loaded successfully: ${history.rates.length} points',
+          'Exchange history loaded successfully: '
+          '${history.rates.length} points',
           name: 'ExchangeHistoryCubit',
         );
 
@@ -115,6 +123,7 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
             averageRate: history.averageRate ?? 0.0,
             chartData: history.rates,
             periodDays: days,
+            selectedPeriod: _selectedPeriod,
           ),
         );
       },
@@ -138,12 +147,16 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
 
   /// Changes the time period and reloads data.
   ///
-  /// [days] - The new time period in days.
-  Future<void> changePeriod(int days) async {
+  /// [period] - The new time period.
+  Future<void> changePeriod(TimePeriod period) async {
+    final days = _getDaysForPeriod(period);
     developer.log(
-      'Changing period to $days days',
+      'Changing period to ${period.label} ($days days)',
       name: 'ExchangeHistoryCubit',
     );
+
+    _selectedPeriod = period;
+    _currentPeriodDays = days;
 
     await loadHistory(
       sourceCurrency: _sourceCurrency,
@@ -152,6 +165,20 @@ class ExchangeHistoryCubit extends Cubit<ExchangeHistoryState> {
       targetCurrencyName: _targetCurrencyName,
       days: days,
     );
+  }
+
+  /// Gets the number of days for a time period.
+  int _getDaysForPeriod(TimePeriod period) {
+    switch (period) {
+      case TimePeriod.oneWeek:
+        return 7;
+      case TimePeriod.oneMonth:
+        return 30;
+      case TimePeriod.threeMonths:
+        return 90;
+      case TimePeriod.oneYear:
+        return 365;
+    }
   }
 
   /// Swaps the source and target currencies.

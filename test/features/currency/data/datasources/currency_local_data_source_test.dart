@@ -44,8 +44,9 @@ void main() {
   group('getCurrencies', () {
     test('should return list of CurrencyModel from database', () async {
       // Arrange
-      when(() => mockDatabaseHelper.getCurrencies())
-          .thenAnswer((_) async => tCurrencyMaps);
+      when(
+        () => mockDatabaseHelper.getCurrencies(),
+      ).thenAnswer((_) async => tCurrencyMaps);
 
       // Act
       final result = await dataSource.getCurrencies();
@@ -59,8 +60,9 @@ void main() {
 
     test('should return empty list when database is empty', () async {
       // Arrange
-      when(() => mockDatabaseHelper.getCurrencies())
-          .thenAnswer((_) async => []);
+      when(
+        () => mockDatabaseHelper.getCurrencies(),
+      ).thenAnswer((_) async => []);
 
       // Act
       final result = await dataSource.getCurrencies();
@@ -74,8 +76,9 @@ void main() {
   group('getCurrencyByCode', () {
     test('should return CurrencyModel when currency exists', () async {
       // Arrange
-      when(() => mockDatabaseHelper.getCurrencyByCode('USD'))
-          .thenAnswer((_) async => tCurrencyMaps[0]);
+      when(
+        () => mockDatabaseHelper.getCurrencyByCode('USD'),
+      ).thenAnswer((_) async => tCurrencyMaps[0]);
 
       // Act
       final result = await dataSource.getCurrencyByCode('USD');
@@ -89,8 +92,9 @@ void main() {
 
     test('should return null when currency does not exist', () async {
       // Arrange
-      when(() => mockDatabaseHelper.getCurrencyByCode('XYZ'))
-          .thenAnswer((_) async => null);
+      when(
+        () => mockDatabaseHelper.getCurrencyByCode('XYZ'),
+      ).thenAnswer((_) async => null);
 
       // Act
       final result = await dataSource.getCurrencyByCode('XYZ');
@@ -104,8 +108,9 @@ void main() {
   group('saveCurrencies', () {
     test('should call insertCurrencies on database helper', () async {
       // Arrange
-      when(() => mockDatabaseHelper.insertCurrencies(any()))
-          .thenAnswer((_) async {});
+      when(
+        () => mockDatabaseHelper.insertCurrencies(any()),
+      ).thenAnswer((_) async {});
 
       // Act
       await dataSource.saveCurrencies(tCurrencyModels);
@@ -118,8 +123,9 @@ void main() {
   group('hasCurrencies', () {
     test('should return true when currencies exist', () async {
       // Arrange
-      when(() => mockDatabaseHelper.hasCurrencies())
-          .thenAnswer((_) async => true);
+      when(
+        () => mockDatabaseHelper.hasCurrencies(),
+      ).thenAnswer((_) async => true);
 
       // Act
       final result = await dataSource.hasCurrencies();
@@ -131,8 +137,9 @@ void main() {
 
     test('should return false when no currencies exist', () async {
       // Arrange
-      when(() => mockDatabaseHelper.hasCurrencies())
-          .thenAnswer((_) async => false);
+      when(
+        () => mockDatabaseHelper.hasCurrencies(),
+      ).thenAnswer((_) async => false);
 
       // Act
       final result = await dataSource.hasCurrencies();
@@ -146,8 +153,9 @@ void main() {
   group('clearCurrencies', () {
     test('should call deleteAllCurrencies on database helper', () async {
       // Arrange
-      when(() => mockDatabaseHelper.deleteAllCurrencies())
-          .thenAnswer((_) async => 0);
+      when(
+        () => mockDatabaseHelper.deleteAllCurrencies(),
+      ).thenAnswer((_) async => 0);
 
       // Act
       await dataSource.clearCurrencies();

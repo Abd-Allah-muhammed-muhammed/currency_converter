@@ -12,17 +12,17 @@ class AppColors {
   static const Color cyanLight = Color(0xFF00E5D9);
   static const Color cyanDark = Color(0xFF00B8AD);
   static const Color turquoise = Color(0xFF2DD4BF);
-  
+
   // Background colors
   static const Color backgroundLight = Color(0xFFF5F7FA);
   static const Color cardBackground = Color(0xFFFFFFFF);
   static const Color chartBackground = Color(0xFFE8F7F6);
-  
+
   // Text colors
-  static const Color textPrimary = Color(0xFF1A1A2E);
+  static const Color textPrimary = Color(0xFF00D4C8);
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textMuted = Color(0xFF9CA3AF);
-  
+
   // Chart colors
   static const Color chartLine = Color(0xFF00D4C8);
   static const Color chartGradientStart = Color(0x4000D4C8);

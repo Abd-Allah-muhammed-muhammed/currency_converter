@@ -1,21 +1,20 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import '../../../../core/utils/colors.dart';
 
 /// Data model for history chart points.
 class HistoryChartData {
+  HistoryChartData({required this.date, required this.rate});
   final DateTime date;
   final double rate;
-
-  HistoryChartData({required this.date, required this.rate});
 }
 
 /// A large chart widget for displaying exchange rate history.
 class HistoryChart extends StatelessWidget {
   const HistoryChart({
+    required this.data,
     super.key,
-     required this.data,
     this.height = 280,
     this.showDayLabels = true,
   });
@@ -29,10 +28,9 @@ class HistoryChart extends StatelessWidget {
   /// Whether to show day labels on X axis.
   final bool showDayLabels;
 
-
   @override
   Widget build(BuildContext context) {
-    final chartData = data ;
+    final chartData = data;
     // Calculate min and max for better visualization
     final rates = chartData.map((e) => e.rate).toList();
     final minRate = rates.reduce((a, b) => a < b ? a : b);
@@ -88,9 +86,7 @@ class HistoryChart extends StatelessWidget {
         trackballBehavior: TrackballBehavior(
           enable: true,
           activationMode: ActivationMode.singleTap,
-          lineType: TrackballLineType.vertical,
           lineColor: AppColors.cyan,
-          lineWidth: 1,
           lineDashArray: const [5, 5],
           markerSettings: const TrackballMarkerSettings(
             markerVisibility: TrackballVisibilityMode.visible,
@@ -101,7 +97,6 @@ class HistoryChart extends StatelessWidget {
             borderColor: AppColors.cyan,
           ),
           tooltipSettings: const InteractiveTooltip(
-            enable: true,
             color: AppColors.textPrimary,
             textStyle: TextStyle(color: Colors.white),
           ),
@@ -111,7 +106,6 @@ class HistoryChart extends StatelessWidget {
             dataSource: chartData,
             xValueMapper: (HistoryChartData data, _) => data.date,
             yValueMapper: (HistoryChartData data, _) => data.rate,
-            splineType: SplineType.natural,
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -127,18 +121,21 @@ class HistoryChart extends StatelessWidget {
       ),
     );
   }
-
-  dynamic _getDayFormat() {
-    // Return day abbreviation format
-    return null; // Will use custom label formatter in real implementation
-  }
 }
 
 /// Custom day label formatter widget.
 class DayLabelsRow extends StatelessWidget {
   const DayLabelsRow({super.key});
 
-  static const List<String> _days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  static const List<String> _days = [
+    'MON',
+    'TUE',
+    'WED',
+    'THU',
+    'FRI',
+    'SAT',
+    'SUN',
+  ];
 
   @override
   Widget build(BuildContext context) {

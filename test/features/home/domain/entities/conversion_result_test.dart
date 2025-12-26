@@ -12,7 +12,7 @@ void main() {
           amount: 1000,
           quote: 0.620998,
           result: 620.998,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -25,9 +25,9 @@ void main() {
           fromCurrency: 'USD',
           toCurrency: 'JPY',
           amount: 100,
-          quote: 150.0,
-          result: 15000.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          quote: 150,
+          result: 15000,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -42,7 +42,7 @@ void main() {
           amount: 10000,
           quote: 0.006667,
           result: 66.67,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -59,7 +59,7 @@ void main() {
           amount: 1000,
           quote: 0.620998,
           result: 620.998,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -74,7 +74,7 @@ void main() {
           amount: 100,
           quote: 0.924567,
           result: 92.4567,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -88,8 +88,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 1000000,
           quote: 0.92,
-          result: 920000.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 920000,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -105,8 +105,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 1000,
           quote: 0.62,
-          result: 620.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 620,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -121,7 +121,7 @@ void main() {
           amount: 123.456,
           quote: 0.92,
           result: 113.58,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -137,7 +137,7 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
+          result: 92,
           timestamp: DateTime.utc(2025, 12, 25, 14, 30),
         );
 
@@ -152,7 +152,7 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
+          result: 92,
           timestamp: DateTime.utc(2025, 12, 25, 9, 5),
         );
 
@@ -167,8 +167,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 0, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25),
         );
 
         // Act & Assert
@@ -182,7 +182,7 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
+          result: 92,
           timestamp: DateTime.utc(2025, 12, 25, 23, 59),
         );
 
@@ -199,8 +199,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         final result2 = ConversionResult(
@@ -208,8 +208,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -224,8 +224,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         final result2 = ConversionResult(
@@ -233,8 +233,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -248,8 +248,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         final result2 = ConversionResult(
@@ -257,8 +257,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 200,
           quote: 0.92,
-          result: 184.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 184,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act & Assert
@@ -272,8 +272,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         final result2 = ConversionResult(
@@ -281,8 +281,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 14, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 14),
         );
 
         // Act & Assert
@@ -298,8 +298,8 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+          result: 92,
+          timestamp: DateTime.utc(2025, 12, 25, 12),
         );
 
         // Act

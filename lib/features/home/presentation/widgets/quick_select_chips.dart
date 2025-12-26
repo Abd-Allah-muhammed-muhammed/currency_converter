@@ -1,18 +1,17 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A model for quick select amount options.
 class QuickSelectOption {
-  final int amount;
-  final String currency;
-  final bool isSelected;
-
   const QuickSelectOption({
     required this.amount,
     required this.currency,
     this.isSelected = false,
   });
+  final int amount;
+  final String currency;
+  final bool isSelected;
 
   String get displayText => '$amount $currency';
 }
@@ -20,8 +19,8 @@ class QuickSelectOption {
 /// A chip widget for quick amount selection.
 class QuickSelectChip extends StatelessWidget {
   const QuickSelectChip({
-    super.key,
     required this.option,
+    super.key,
     this.onTap,
   });
 
@@ -41,8 +40,8 @@ class QuickSelectChip extends StatelessWidget {
           color: option.isSelected ? AppColors.cyan : Colors.transparent,
           borderRadius: BorderRadius.circular(25),
           border: Border.all(
-            color: option.isSelected 
-                ? AppColors.cyan 
+            color: option.isSelected
+                ? AppColors.cyan
                 : AppColors.textMuted.withValues(alpha: 0.3),
             width: 1.5,
           ),
@@ -63,8 +62,8 @@ class QuickSelectChip extends StatelessWidget {
 /// A horizontal list of quick select chips.
 class QuickSelectChips extends StatelessWidget {
   const QuickSelectChips({
-    super.key,
     required this.options,
+    super.key,
     this.onOptionSelected,
   });
 

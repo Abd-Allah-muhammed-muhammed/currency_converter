@@ -1,13 +1,13 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A card widget displaying a single statistic.
 class StatisticCard extends StatelessWidget {
   const StatisticCard({
-    super.key,
     required this.label,
     required this.value,
+    super.key,
   });
 
   /// The label of the statistic (e.g., "High", "Low", "Avg").
@@ -54,11 +54,11 @@ class StatisticCard extends StatelessWidget {
 /// A row of statistics cards displaying High, Low, and Average values.
 class StatisticsRow extends StatelessWidget {
   const StatisticsRow({
-    super.key,
     required this.high,
     required this.low,
     required this.average,
     required this.periodLabel,
+    super.key,
   });
 
   /// The highest rate in the period.

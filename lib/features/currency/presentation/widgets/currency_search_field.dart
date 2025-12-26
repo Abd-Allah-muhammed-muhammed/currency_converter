@@ -1,6 +1,6 @@
+import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
-import '../../../../core/utils/colors.dart';
 
 /// A search text field widget for currency search.
 class CurrencySearchField extends StatelessWidget {
@@ -24,11 +24,9 @@ class CurrencySearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.textMuted.withValues(alpha: 0.2),
-          width: 1,
+          color: AppColors.textSecondary.withValues(alpha: 0.2),
         ),
       ),
       child: TextField(
@@ -44,7 +42,7 @@ class CurrencySearchField extends StatelessWidget {
             fontSize: 14.dp,
             color: AppColors.textMuted,
           ),
-          prefixIcon: Icon(
+          prefixIcon: const Icon(
             Icons.search_rounded,
             color: AppColors.cyan,
             size: 22,

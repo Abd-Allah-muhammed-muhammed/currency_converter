@@ -41,7 +41,7 @@ class PreferencesRepository {
 
   /// Saves the last entered amount.
   Future<bool> saveLastAmount(double amount) async {
-    return await _prefs.setDouble(_keyLastAmount, amount);
+    return _prefs.setDouble(_keyLastAmount, amount);
   }
 
   /// Gets the last entered amount.
@@ -58,12 +58,12 @@ class PreferencesRepository {
 
   /// Marks that the app has been launched.
   Future<bool> setFirstLaunchComplete() async {
-    return await _prefs.setBool(_keyFirstLaunch, false);
+    return _prefs.setBool(_keyFirstLaunch, false);
   }
 
   /// Clears all saved preferences.
   Future<bool> clearAll() async {
-    return await _prefs.clear();
+    return _prefs.clear();
   }
 
   /// Clears only conversion-related preferences.

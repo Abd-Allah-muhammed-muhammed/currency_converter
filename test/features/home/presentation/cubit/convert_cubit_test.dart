@@ -1,7 +1,11 @@
-import 'package:currency_converter/core/network/api_error_handler.dart';
-import 'package:currency_converter/core/network/api_error_model.dart';
+import 'dart:async';
+
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
+import 'package:currency_converter/core/network/errors/api_error_model.dart';
 import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/network/errors/ResponseCode.dart';
 import 'package:currency_converter/core/storage/preferences_repository.dart';
+import 'package:currency_converter/features/currency/domain/entities/currency.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:currency_converter/features/home/domain/usecases/convert_currency.dart';
 import 'package:currency_converter/features/home/presentation/cubit/convert_cubit.dart';
@@ -30,7 +34,7 @@ class MockConvertCurrency implements ConvertCurrency {
     calls.add(params);
 
     if (delay > Duration.zero) {
-      await Future.delayed(delay);
+      await Future<void>.delayed(delay);
     }
 
     return result ?? ApiResult.success(_defaultResult(params));
@@ -43,7 +47,7 @@ class MockConvertCurrency implements ConvertCurrency {
       amount: params.amount,
       quote: 0.92,
       result: params.amount * 0.92,
-      timestamp: DateTime.utc(2025, 12, 25, 12, 0),
+      timestamp: DateTime.utc(2025, 12, 25, 12),
     );
   }
 }
@@ -68,7 +72,7 @@ void main() {
     });
 
     tearDown(() {
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     test('initial state should be ConvertInitial', () {
@@ -76,45 +80,47 @@ void main() {
     });
 
     group('convertImmediately', () {
-      test('should emit Loading then Success when conversion succeeds', () async {
-        // Arrange
-        final expectedResult = ConversionResult(
-          fromCurrency: 'USD',
-          toCurrency: 'EUR',
-          amount: 100,
-          quote: 0.92,
-          result: 92.0,
-          timestamp: DateTime.utc(2025, 12, 25, 12, 0),
-        );
-        mockConvertCurrency.result = ApiResult.success(expectedResult);
+      test(
+        'should emit Loading then Success when conversion succeeds',
+        () async {
+          // Arrange
+          final expectedResult = ConversionResult(
+            fromCurrency: 'USD',
+            toCurrency: 'EUR',
+            amount: 100,
+            quote: 0.92,
+            result: 92,
+            timestamp: DateTime.utc(2025, 12, 25, 12),
+          );
+          mockConvertCurrency.result = ApiResult.success(expectedResult);
 
-        // Act
-        final states = <ConvertState>[];
-        cubit.stream.listen(states.add);
+          // Act
+          final states = <ConvertState>[];
+          cubit.stream.listen(states.add);
 
-        await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
+          await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
 
-        // Wait for stream to process
-        await Future.delayed(const Duration(milliseconds: 50));
+          // Wait for stream to process
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          // Assert
+          expect(states.length, 2);
+          expect(states[0], isA<ConvertLoading>());
+          expect(states[1], isA<ConvertSuccess>());
 
-        // Assert
-        expect(states.length, 2);
-        expect(states[0], isA<ConvertLoading>());
-        expect(states[1], isA<ConvertSuccess>());
-
-        final successState = states[1] as ConvertSuccess;
-        expect(successState.result.fromCurrency, 'USD');
-        expect(successState.result.toCurrency, 'EUR');
-        expect(successState.result.amount, 100);
-        expect(successState.rate, 0.92);
-        expect(successState.convertedAmount, 92.0);
-      });
+          final successState = states[1] as ConvertSuccess;
+          expect(successState.result.fromCurrency, 'USD');
+          expect(successState.result.toCurrency, 'EUR');
+          expect(successState.result.amount, 100);
+          expect(successState.rate, 0.92);
+          expect(successState.convertedAmount, 92.0);
+        },
+      );
 
       test('should emit Loading then Error when conversion fails', () async {
         // Arrange
         mockConvertCurrency.result = ApiResult.failure(
           ErrorHandler.fromMessage(
-            ApiErrorModel(
+            const ApiErrorModel(
               code: ResponseCode.defaultError,
               message: 'API Error',
             ),
@@ -128,7 +134,7 @@ void main() {
         await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
 
         // Wait for stream to process
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         // Assert
         expect(states.length, 2);
@@ -161,18 +167,19 @@ void main() {
     group('convertWithDebounce', () {
       test('should debounce multiple rapid calls', () async {
         // Act - simulate rapid typing
-        cubit.convertWithDebounce(from: 'USD', to: 'EUR', amount: 1);
-        cubit.convertWithDebounce(from: 'USD', to: 'EUR', amount: 10);
-        cubit.convertWithDebounce(from: 'USD', to: 'EUR', amount: 100);
+        cubit
+          ..convertWithDebounce(from: 'USD', to: 'EUR', amount: 1)
+          ..convertWithDebounce(from: 'USD', to: 'EUR', amount: 10)
+          ..convertWithDebounce(from: 'USD', to: 'EUR', amount: 100);
 
         // Wait less than debounce duration
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future<void>.delayed(const Duration(milliseconds: 500));
 
         // Assert - no calls yet
         expect(mockConvertCurrency.calls, isEmpty);
 
         // Wait for debounce to complete
-        await Future.delayed(const Duration(milliseconds: 600));
+        await Future<void>.delayed(const Duration(milliseconds: 600));
 
         // Assert - only last call should be made
         expect(mockConvertCurrency.calls.length, 1);
@@ -184,7 +191,7 @@ void main() {
         cubit.convertWithDebounce(from: 'USD', to: 'EUR', amount: 0);
 
         // Wait for potential debounce
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future<void>.delayed(const Duration(milliseconds: 1200));
 
         // Assert
         expect(mockConvertCurrency.calls, isEmpty);
@@ -193,9 +200,11 @@ void main() {
 
     group('swapCurrencies', () {
       test('should swap from and to currencies', () async {
-        // Arrange
-        cubit.setFromCurrency('USD');
-        cubit.setToCurrency('EUR');
+        // Arrange - set currencies by doing conversions
+        await cubit.setFromCurrency(
+          const Currency(code: 'USD', name: 'United States Dollar'),
+        );
+        await cubit.setToCurrency(const Currency(code: 'EUR', name: 'Euro'));
 
         // Set amount by doing an immediate conversion first
         await cubit.convertImmediately(from: 'USD', to: 'EUR', amount: 100);
@@ -224,7 +233,7 @@ void main() {
           toCurrency: 'EUR',
           amount: 100,
           quote: 0.92,
-          result: 92.0,
+          result: 92,
           timestamp: DateTime.utc(2025, 12, 25, 14, 30),
         );
         mockConvertCurrency.result = ApiResult.success(expectedResult);

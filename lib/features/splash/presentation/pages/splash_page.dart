@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:currency_converter/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
@@ -29,29 +31,31 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
+        curve: const Interval(0, 0.6, curve: Curves.easeInOut),
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: const Interval(0.2, 0.8, curve: Curves.elasticOut),
       ),
     );
 
-    _animationController.forward();
+    unawaited(_animationController.forward());
   }
 
   void _navigateToHome() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        context.pushReplacement('/home');
-      }
-    });
+    unawaited(
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          context.pushReplacement('/home');
+        }
+      }),
+    );
   }
 
   @override
@@ -70,7 +74,7 @@ class _SplashPageState extends State<SplashPage>
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppColors.backgroundLight,AppColors.chartBackground],
+              colors: [AppColors.backgroundLight, AppColors.chartBackground],
             ),
           ),
           child: SafeArea(
@@ -98,7 +102,7 @@ class _SplashPageState extends State<SplashPage>
                                   ),
                                 ),
                               ),
-                          ),
+                            ),
                           ),
 
                           SizedBox(height: 8.h),
@@ -133,8 +137,6 @@ class _SplashPageState extends State<SplashPage>
                         ],
                       ),
                     ),
-
-
                   ],
                 );
               },

@@ -28,29 +28,32 @@ void main() {
   final tRequestOptions = RequestOptions(path: '/list');
 
   group('getCurrencies', () {
-    test('should return list of CurrencyModel when API call is successful',
-        () async {
-      // Arrange
-      final response = Response<dynamic>(
-        requestOptions: tRequestOptions,
-        statusCode: 200,
-        data: tSuccessResponse,
-      );
-      final httpResponse = HttpResponse(tSuccessResponse, response);
+    test(
+      'should return list of CurrencyModel when API call is successful',
+      () async {
+        // Arrange
+        final response = Response<dynamic>(
+          requestOptions: tRequestOptions,
+          statusCode: 200,
+          data: tSuccessResponse,
+        );
+        final httpResponse = HttpResponse(tSuccessResponse, response);
 
-      when(() => mockApiService.getCurrencies())
-          .thenAnswer((_) async => httpResponse);
+        when(
+          () => mockApiService.getCurrencies(),
+        ).thenAnswer((_) async => httpResponse);
 
-      // Act
-      final result = await dataSource.getCurrencies();
+        // Act
+        final result = await dataSource.getCurrencies();
 
-      // Assert
-      expect(result.length, equals(3));
-      expect(result.any((c) => c.code == 'USD'), isTrue);
-      expect(result.any((c) => c.code == 'EUR'), isTrue);
-      expect(result.any((c) => c.code == 'GBP'), isTrue);
-      verify(() => mockApiService.getCurrencies()).called(1);
-    });
+        // Assert
+        expect(result.length, equals(3));
+        expect(result.any((c) => c.code == 'USD'), isTrue);
+        expect(result.any((c) => c.code == 'EUR'), isTrue);
+        expect(result.any((c) => c.code == 'GBP'), isTrue);
+        verify(() => mockApiService.getCurrencies()).called(1);
+      },
+    );
 
     test('should sort currencies by name', () async {
       // Arrange
@@ -61,8 +64,9 @@ void main() {
       );
       final httpResponse = HttpResponse(tSuccessResponse, response);
 
-      when(() => mockApiService.getCurrencies())
-          .thenAnswer((_) async => httpResponse);
+      when(
+        () => mockApiService.getCurrencies(),
+      ).thenAnswer((_) async => httpResponse);
 
       // Act
       final result = await dataSource.getCurrencies();
@@ -86,8 +90,9 @@ void main() {
       );
       final httpResponse = HttpResponse(failResponse, response);
 
-      when(() => mockApiService.getCurrencies())
-          .thenAnswer((_) async => httpResponse);
+      when(
+        () => mockApiService.getCurrencies(),
+      ).thenAnswer((_) async => httpResponse);
 
       // Act & Assert
       expect(
@@ -105,8 +110,9 @@ void main() {
       );
       final httpResponse = HttpResponse({'error': 'Unauthorized'}, response);
 
-      when(() => mockApiService.getCurrencies())
-          .thenAnswer((_) async => httpResponse);
+      when(
+        () => mockApiService.getCurrencies(),
+      ).thenAnswer((_) async => httpResponse);
 
       // Act & Assert
       expect(
@@ -140,8 +146,9 @@ void main() {
       );
       final httpResponse = HttpResponse(tSuccessResponse, response);
 
-      when(() => mockApiService.getCurrencies())
-          .thenAnswer((_) async => httpResponse);
+      when(
+        () => mockApiService.getCurrencies(),
+      ).thenAnswer((_) async => httpResponse);
 
       // Act
       final result = await dataSource.getCurrencies();

@@ -3,10 +3,10 @@
 // To perform an interaction with a widget in your test, use the WidgetTester
 // utility in the flutter_test package.
 
+import 'package:currency_converter/features/splash/presentation/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:currency_converter/features/splash/presentation/pages/splash_page.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
@@ -72,8 +72,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-
-    testWidgets('SplashPage has correct background color', (WidgetTester tester) async {
+    testWidgets('SplashPage has correct background color', (
+      WidgetTester tester,
+    ) async {
       final router = createTestRouter();
 
       // Build the SplashPage widget with FlutterSizer wrapper

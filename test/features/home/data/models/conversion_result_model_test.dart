@@ -123,9 +123,9 @@ void main() {
           success: true,
           fromCurrency: 'USD',
           toCurrency: 'EUR',
-          amount: 100.0,
+          amount: 100,
           quote: 0.92,
-          result: 92.0,
+          result: 92,
           timestamp: 1735128000, // 2024-12-25 12:00:00 UTC
         );
 
@@ -152,9 +152,9 @@ void main() {
           success: true,
           fromCurrency: 'CAD',
           toCurrency: 'EUR',
-          amount: 1000.0,
+          amount: 1000,
           quote: 0.62,
-          result: 620.0,
+          result: 620,
           timestamp: timestamp,
         );
 
@@ -176,9 +176,9 @@ void main() {
           success: true,
           fromCurrency: 'USD',
           toCurrency: 'EUR',
-          amount: 100.0,
+          amount: 100,
           quote: 0.92,
-          result: 92.0,
+          result: 92,
           timestamp: 1735128000,
         );
 

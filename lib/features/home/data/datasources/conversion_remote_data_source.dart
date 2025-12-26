@@ -1,14 +1,15 @@
 import 'dart:developer' as developer;
 
-import 'package:injectable/injectable.dart';
 import 'package:currency_converter/core/network/api_constants.dart';
 import 'package:currency_converter/core/network/api_service.dart';
 import 'package:currency_converter/features/home/data/models/conversion_result_model.dart';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 
 /// Remote data source for currency conversion operations.
 ///
 /// This class handles all API calls for currency conversion.
+// ignore: one_member_abstracts
 abstract class ConversionRemoteDataSource {
   /// Converts an amount from one currency to another.
   ///
@@ -103,7 +104,6 @@ class ConversionRemoteDataSourceImpl implements ConversionRemoteDataSource {
       throw DioException(
         requestOptions: RequestOptions(path: ApiConstants.convert),
         message: 'Unexpected error: $e',
-        type: DioExceptionType.unknown,
       );
     }
   }
