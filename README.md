@@ -8,8 +8,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.35.5+-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.9.2+-0175C2?logo=dart)](https://dart.dev)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
- 
+  
 
 A production-ready Flutter currency converter application built with **Clean Architecture**, **Bloc pattern**, and **offline-first** approach.
 
@@ -618,10 +617,7 @@ Contributions are welcome! Please follow these steps:
 - Write tests for new features
 - Update documentation
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+ 
 ## 👨‍💻 Author
 
 **Abd-Allah-muhammed-muhammed**
