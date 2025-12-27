@@ -1,7 +1,7 @@
+import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/errors/api_error_model.dart';
-import 'package:currency_converter/core/network/api_result.dart';
-import 'package:currency_converter/core/network/errors/ResponseCode.dart';
+import 'package:currency_converter/core/network/errors/response_code.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/home/domain/entities/conversion_result.dart';
 import 'package:currency_converter/features/home/domain/repositories/conversion_repository.dart';

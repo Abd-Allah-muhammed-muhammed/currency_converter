@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 
-import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/features/exchange_history/data/datasources/exchange_history_remote_data_source.dart';
 import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/domain/repositories/exchange_history_repository.dart';

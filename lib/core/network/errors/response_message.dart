@@ -1,6 +1,4 @@
-
-
-import 'package:currency_converter/core/network/errors/ApiErrors.dart';
+import 'package:currency_converter/core/network/errors/api_errors.dart';
 
 /// Response error messages.
 class ResponseMessage {

@@ -1,9 +1,8 @@
 import 'package:currency_converter/core/network/api_result.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
-import 'package:currency_converter/features/exchange_history/data/models/GetExchangeHistoryParams.dart';
+import 'package:currency_converter/features/exchange_history/data/models/get_exchange_history_params.dart';
 import 'package:currency_converter/features/exchange_history/domain/entities/exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/domain/repositories/exchange_history_repository.dart';
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
 /// Use case for getting exchange rate history.
@@ -27,4 +26,3 @@ class GetExchangeHistory
     );
   }
 }
-

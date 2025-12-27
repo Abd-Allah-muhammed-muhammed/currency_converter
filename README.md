@@ -6,12 +6,10 @@
 > **[📺 Watch how it works](https://drive.google.com/file/d/1nZNpUag4qqLhA1MmN82HchL2bUNMPFaF/view?usp=sharing)**
 
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.9.2+-02569B?logo=flutter)](https://flutter.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.35.5+-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.9.2+-0175C2?logo=dart)](https://dart.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/currency_converter/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/currency_converter/actions/workflows/ci.yml)
-[![Quick Check](https://github.com/YOUR_USERNAME/currency_converter/actions/workflows/quick-check.yml/badge.svg)](https://github.com/YOUR_USERNAME/currency_converter/actions/workflows/quick-check.yml)
+ 
 
 A production-ready Flutter currency converter application built with **Clean Architecture**, **Bloc pattern**, and **offline-first** approach.
 
@@ -96,7 +94,7 @@ lib/
 
 Before you begin, ensure you have the following installed:
 
-- **Flutter SDK**: 3.9.2 or higher
+- **Flutter SDK**: 3.35.1 or higher
 - **Dart SDK**: 3.9.2 or higher
 - **Android Studio** / **VS Code** with Flutter extensions
 - **Git**
@@ -105,7 +103,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/currency_converter.git
+   git clone https://github.com/Abd-Allah-muhammed-muhammed/currency_converter.git
    cd currency_converter
    ```
 
@@ -282,7 +280,6 @@ Code quality is enforced using `very_good_analysis`:
 
 ### Local Database
 - **sqflite** (^2.4.1): SQLite plugin for Flutter
-- **sqlite3_flutter_libs** (^0.5.20): Native SQLite libraries
 - **Why?**: 
   - Lightweight and fast
   - Perfect for offline-first approach
@@ -605,8 +602,6 @@ After successful builds, download artifacts from the **Actions** tab:
 
 The workflows run automatically. No configuration needed!
 
-For detailed CI/CD documentation, see [CI_CD_DOCUMENTATION.md](CI_CD_DOCUMENTATION.md).
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -629,7 +624,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Your Name**
+**Abd-Allah-muhammed-muhammed**
 - GitHub: [@Abd-Allah-muhammed-muhammed](https://github.com/Abd-Allah-muhammed-muhammed)
 - LinkedIn: [abdallah-muhammed](https://www.linkedin.com/in/abdallah-muhammed-16a16b123/)
 

@@ -1,8 +1,6 @@
-
-
 import 'package:flutter/cupertino.dart';
 
-/// Parameters for [GetExchangeHistory] use case.
+/// Parameters for `GetExchangeHistory` use case.
 @immutable
 class GetExchangeHistoryParams {
   const GetExchangeHistoryParams({

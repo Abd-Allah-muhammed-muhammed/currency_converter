@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:currency_converter/core/utils/colors.dart';
 import 'package:currency_converter/core/utils/widgets/cached_flag_image.dart';
 import 'package:flutter/material.dart';

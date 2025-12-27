@@ -105,4 +105,3 @@ ApiErrorModel _handleBadResponse(DioException error) {
 
   return DataSource.defaultError.getFailure();
 }
-

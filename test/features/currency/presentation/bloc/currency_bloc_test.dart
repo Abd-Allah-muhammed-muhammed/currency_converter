@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/network/api_result.dart';
+import 'package:currency_converter/core/network/errors/api_error_handler.dart';
 import 'package:currency_converter/core/usecase/usecase.dart';
 import 'package:currency_converter/features/currency/domain/entities/currency.dart';
 import 'package:currency_converter/features/currency/domain/repositories/currency_repository.dart';

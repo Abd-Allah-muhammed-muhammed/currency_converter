@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 
-import 'package:currency_converter/features/exchange_history/data/models/GetExchangeHistoryParams.dart';
+import 'package:currency_converter/features/exchange_history/data/models/get_exchange_history_params.dart';
 import 'package:currency_converter/features/exchange_history/domain/usecases/get_exchange_history.dart';
 import 'package:currency_converter/features/exchange_history/presentation/cubit/exchange_history_state.dart';
 import 'package:currency_converter/features/exchange_history/presentation/widgets/time_period_selector.dart';

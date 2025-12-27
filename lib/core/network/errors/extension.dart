@@ -1,11 +1,7 @@
-
-
-
-import 'package:currency_converter/core/network/errors/api_error_handler.dart';
-import 'package:currency_converter/core/network/errors/ResponseCode.dart';
 import 'package:currency_converter/core/network/errors/api_error_model.dart';
- import 'package:currency_converter/core/network/errors/ResponseMessage.dart';
 import 'package:currency_converter/core/network/errors/enums.dart';
+import 'package:currency_converter/core/network/errors/response_code.dart';
+import 'package:currency_converter/core/network/errors/response_message.dart';
 
 extension DataSourceExtension on DataSource {
   ApiErrorModel getFailure() {
@@ -78,4 +74,3 @@ extension DataSourceExtension on DataSource {
     }
   }
 }
-

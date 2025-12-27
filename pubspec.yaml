@@ -54,7 +54,6 @@ dependencies:
   rxdart: ^0.27.7
   shared_preferences: ^2.3.3
   sqflite: ^2.4.1
-  sqlite3_flutter_libs: ^0.5.20
   syncfusion_flutter_charts: ^31.1.19
 
 dev_dependencies:
